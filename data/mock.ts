@@ -1,3 +1,5 @@
+import { Difficulty, Source } from '@/constants/enums';
+
 export interface Author {
     id: string;
     name: string;
@@ -21,8 +23,8 @@ export interface Workflow {
     title: string;
     description: string;
     json: string;
-    difficulty: 'Beginner' | 'Intermediate' | 'Advanced';
-    source: 'Official' | 'Community';
+    difficulty: Difficulty;
+    source: Source;
     license: string;
     authorId: string;
     tags: string[];
@@ -85,8 +87,8 @@ export const workflows: Workflow[] = [
                 GitHub: { main: [[{ node: 'Discord', type: 'main', index: 0 }]] }
             }
         }, null, 2),
-        difficulty: 'Beginner',
-        source: 'Official',
+        difficulty: Difficulty.Beginner,
+        source: Source.Official,
         license: 'MIT',
         authorId: '1',
         tags: ['DevOps', 'Social Media'],
@@ -101,8 +103,8 @@ export const workflows: Workflow[] = [
         title: 'Auto-backup PostgreSQL to S3',
         description: 'Daily backup of your PostgreSQL database to an AWS S3 bucket.',
         json: '{\n  "nodes": [\n    { "type": "cron", "position": [100, 200] },\n    { "type": "postgres", "position": [300, 200] },\n    { "type": "s3", "position": [500, 200] }\n  ]\n}',
-        difficulty: 'Intermediate',
-        source: 'Community',
+        difficulty: Difficulty.Intermediate,
+        source: Source.Community,
         license: 'Apache-2.0',
         authorId: '2',
         tags: ['DevOps', 'Productivity'],
@@ -117,8 +119,8 @@ export const workflows: Workflow[] = [
         title: 'Summarize Slack Messages with OpenAI',
         description: 'Automatically summarize long Slack threads using OpenAI and post them back.',
         json: '{\n  "nodes": [\n    { "type": "slack-trigger", "position": [100, 200] },\n    { "type": "openai", "position": [300, 200] },\n    { "type": "slack-post", "position": [500, 200] }\n  ]\n}',
-        difficulty: 'Advanced',
-        source: 'Community',
+        difficulty: Difficulty.Advanced,
+        source: Source.Community,
         license: 'MIT',
         authorId: '2',
         tags: ['AI', 'Productivity'],

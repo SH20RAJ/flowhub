@@ -12,7 +12,7 @@ import {
 } from 'lucide-react';
 import { DIFFICULTY_OPTIONS } from '@/constants/enums';
 import { useUser, useStackApp } from '@stackframe/stack';
-import { LoadingSkeleton } from '@/components/ui/LoadingSkeleton';
+import { Skeleton } from '@/components/ui/LoadingSkeleton';
 
 export default function SubmitPage() {
     const user = useUser();
@@ -21,7 +21,7 @@ export default function SubmitPage() {
     if (user === undefined) {
         return (
             <div className="max-w-4xl mx-auto py-32 flex flex-col items-center gap-6">
-                <LoadingSkeleton className="h-64 rounded-[2.5rem]" />
+                <Skeleton className="h-64 rounded-[2.5rem]" />
             </div>
         );
     }
@@ -41,7 +41,7 @@ export default function SubmitPage() {
                 <Button
                     size="lg"
                     className="rounded-2xl px-12 h-14 font-black uppercase tracking-widest shadow-xl shadow-primary/20 hover:scale-105 transition-transform"
-                    onClick={() => app.urls.signIn.open()}
+                    onClick={() => window.location.href = app.urls.signIn}
                 >
                     Sign In to Continue
                 </Button>
