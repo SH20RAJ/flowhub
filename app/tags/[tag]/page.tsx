@@ -29,7 +29,7 @@ export default function TagDetailPage({ params }: { params: Promise<{ tag: strin
             <div className="space-y-2">
                 <Title as="h1" className="text-3xl font-bold">{tagName} Workflows</Title>
                 <Text className="text-muted-foreground">
-                    Showing {filteredWorkflows.length} workflows tagged with "{tagName}".
+                    Showing {filteredWorkflows.length} workflows tagged with &quot;{tagName}&quot;.
                 </Text>
             </div>
 

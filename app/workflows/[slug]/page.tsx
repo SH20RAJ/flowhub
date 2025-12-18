@@ -3,7 +3,7 @@
 import { use } from 'react';
 import { workflows, authors } from '@/data/mock';
 import { notFound } from 'next/navigation';
-import { Title, Text, Button, Card, Avatar } from 'rizzui';
+import { Title, Text, Button, Avatar } from 'rizzui';
 import { TagBadge } from '@/components/ui/TagBadge';
 import { NodeBadge } from '@/components/ui/NodeBadge';
 import { JsonViewer } from '@/components/workflows/JsonViewer';
@@ -15,8 +15,7 @@ import {
     Calendar,
     Globe,
     FileCode,
-    ShieldCheck,
-    User
+    ShieldCheck
 } from 'lucide-react';
 import Link from 'next/link';
 
@@ -89,7 +88,7 @@ export default function WorkflowDetailPage({ params }: { params: Promise<{ slug:
 
                 {/* Sidebar Metadata */}
                 <div className="space-y-6">
-                    <Card className="p-6 space-y-6 border-muted/50">
+                    <div className="p-6 space-y-6 border rounded-lg bg-card text-card-foreground shadow-sm border-muted/50">
                         <div className="space-y-4">
                             <Title as="h3" className="text-sm font-bold uppercase tracking-wider text-muted-foreground">Author</Title>
                             {author && (
@@ -130,16 +129,16 @@ export default function WorkflowDetailPage({ params }: { params: Promise<{ slug:
                                 </Link>
                             </div>
                         )}
-                    </Card>
+                    </div>
 
-                    <Card className="p-6 space-y-4 border-muted/50 bg-muted/5">
+                    <div className="p-6 space-y-4 border rounded-lg bg-muted/5 shadow-sm border-muted/50">
                         <Title as="h3" className="text-sm font-bold uppercase tracking-wider text-muted-foreground">Tags</Title>
                         <div className="flex flex-wrap gap-2">
                             {workflow.tags.map((tag) => (
                                 <TagBadge key={tag} tag={tag} />
                             ))}
                         </div>
-                    </Card>
+                    </div>
                 </div>
             </div>
         </div>

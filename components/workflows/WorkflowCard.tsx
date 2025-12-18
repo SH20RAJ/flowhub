@@ -1,6 +1,6 @@
 import Link from 'next/link';
 import { Workflow } from '@/data/mock';
-import { Card, Title, Text } from 'rizzui';
+import { Title, Text } from 'rizzui';
 import { TagBadge } from '@/components/ui/TagBadge';
 import { NodeBadge } from '@/components/ui/NodeBadge';
 import { Calendar, User } from 'lucide-react';
@@ -14,7 +14,7 @@ export function WorkflowCard({ workflow }: { workflow: Workflow }) {
     }[workflow.difficulty];
 
     return (
-        <Card className="flex flex-col h-full hover:border-primary/50 transition-colors">
+        <div className="flex flex-col h-full p-6 border rounded-lg bg-card text-card-foreground shadow-sm hover:border-primary/50 transition-colors">
             <div className="flex-1 flex flex-col gap-3">
                 <div className="flex items-start justify-between gap-2">
                     <Link href={`/workflows/${workflow.slug}`} className="hover:underline underline-offset-4">
@@ -56,6 +56,6 @@ export function WorkflowCard({ workflow }: { workflow: Workflow }) {
                     ))}
                 </div>
             </div>
-        </Card>
+        </div>
     );
 }

@@ -1,7 +1,7 @@
 'use client';
 
 import { useState } from 'react';
-import { workflows, tags } from '@/data/mock';
+import { workflows } from '@/data/mock';
 import { Title, Text, Input, Select, ActionIcon, Button } from 'rizzui';
 import { Search, LayoutGrid, List, SlidersHorizontal, X } from 'lucide-react';
 import { WorkflowCard } from '@/components/workflows/WorkflowCard';
@@ -90,7 +90,8 @@ export default function WorkflowsPage() {
                             <Select
                                 options={difficultyOptions}
                                 value={difficulty}
-                                onChange={(val: string) => setDifficulty(val)}
+                                // eslint-disable-next-line @typescript-eslint/no-explicit-any
+                                onChange={(val: any) => setDifficulty(val)}
                                 className="w-full"
                             />
                         </div>
@@ -99,7 +100,8 @@ export default function WorkflowsPage() {
                             <Select
                                 options={sourceOptions}
                                 value={source}
-                                onChange={(val: string) => setSource(val)}
+                                // eslint-disable-next-line @typescript-eslint/no-explicit-any
+                                onChange={(val: any) => setSource(val)}
                                 className="w-full"
                             />
                         </div>

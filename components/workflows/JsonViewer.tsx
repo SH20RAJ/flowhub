@@ -1,7 +1,7 @@
 'use client';
 
 import { useState } from 'react';
-import { Title, ActionIcon, Text } from 'rizzui';
+import { Title, ActionIcon } from 'rizzui';
 import { Copy, Check, ChevronDown, ChevronRight } from 'lucide-react';
 
 export function JsonViewer({ json, title }: { json: string, title?: string }) {

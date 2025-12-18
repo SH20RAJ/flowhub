@@ -1,4 +1,6 @@
-import { Title, Text, Card, Button } from 'rizzui';
+'use client';
+
+import { Title, Text, Button } from 'rizzui';
 import { Github, Heart, Shield, Code, Workflow, Users } from 'lucide-react';
 import Link from 'next/link';
 
@@ -16,7 +18,7 @@ export default function AboutPage() {
             </section>
 
             <div className="grid grid-cols-1 md:grid-cols-2 gap-8">
-                <Card className="p-8 space-y-4 border-muted/50 bg-muted/5">
+                <div className="p-8 space-y-4 border rounded-lg bg-muted/5 shadow-sm border-muted/50">
                     <div className="p-3 w-fit rounded-lg bg-primary/10 text-primary">
                         <Shield className="w-6 h-6" />
                     </div>
@@ -25,9 +27,9 @@ export default function AboutPage() {
                         All workflows on Flowhub are open-source. We believe in the power of
                         shared knowledge and transparent automation code.
                     </Text>
-                </Card>
+                </div>
 
-                <Card className="p-8 space-y-4 border-muted/50 bg-muted/5">
+                <div className="p-8 space-y-4 border rounded-lg bg-muted/5 shadow-sm border-muted/50">
                     <div className="p-3 w-fit rounded-lg bg-primary/10 text-primary">
                         <Users className="w-6 h-6" />
                     </div>
@@ -36,7 +38,7 @@ export default function AboutPage() {
                         Flowhub is driven by the n8n community. Our goal is to provide a
                         centralized hub for developers to discover and share high-quality flows.
                     </Text>
-                </Card>
+                </div>
             </div>
 
             <section className="space-y-8 py-12 border-y border-border/50">
@@ -68,7 +70,7 @@ export default function AboutPage() {
                 </Text>
                 <div className="flex flex-wrap items-center justify-center gap-4">
                     <Link href="/submit">
-                        <Button size="lg" variant="secondary" className="rounded-full px-8">
+                        <Button size="lg" variant="flat" className="rounded-full px-8">
                             Submit Your First Flow
                         </Button>
                     </Link>

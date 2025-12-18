@@ -2,7 +2,7 @@
 
 import { useState } from 'react';
 import { nodes, workflows } from '@/data/mock';
-import { Title, Text, Input, Card } from 'rizzui';
+import { Title, Text, Input } from 'rizzui';
 import Link from 'next/link';
 import { Box, Search, ArrowRight } from 'lucide-react';
 
@@ -37,7 +37,7 @@ export default function NodesPage() {
             <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-4">
                 {nodeStats.map((node) => (
                     <Link key={node.id} href={`/nodes/${node.id}`}>
-                        <Card className="p-5 hover:border-primary/50 transition-all group flex items-start gap-4">
+                        <div className="p-5 border rounded-lg bg-card text-card-foreground shadow-sm hover:border-primary/50 transition-all group flex items-start gap-4">
                             <div className="p-3 rounded-lg bg-muted text-muted-foreground group-hover:bg-primary group-hover:text-primary-foreground transition-colors shrink-0">
                                 <Box className="w-6 h-6" />
                             </div>
@@ -53,7 +53,7 @@ export default function NodesPage() {
                                     View workflows <ArrowRight className="w-3.5 h-3.5 ml-1" />
                                 </div>
                             </div>
-                        </Card>
+                        </div>
                     </Link>
                 ))}
                 {nodeStats.length === 0 && (

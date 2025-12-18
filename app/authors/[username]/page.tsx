@@ -2,10 +2,10 @@
 
 import { use } from 'react';
 import { workflows, authors } from '@/data/mock';
-import { Title, Text, Card, Avatar, Button } from 'rizzui';
+import { Title, Text, Avatar, Button } from 'rizzui';
 import { WorkflowCard } from '@/components/workflows/WorkflowCard';
 import Link from 'next/link';
-import { ArrowLeft, Github, Globe, MapPin, Mail } from 'lucide-react';
+import { ArrowLeft, Github, Globe, MapPin } from 'lucide-react';
 import { notFound } from 'next/navigation';
 
 export default function AuthorProfilePage({ params }: { params: Promise<{ username: string }> }) {
@@ -30,7 +30,7 @@ export default function AuthorProfilePage({ params }: { params: Promise<{ userna
 
             <div className="flex flex-col md:flex-row gap-8 items-start">
                 {/* Author Info */}
-                <Card className="w-full md:w-80 p-6 space-y-6 shrink-0 border-muted/50">
+                <div className="w-full md:w-80 p-6 space-y-6 shrink-0 border rounded-lg bg-card text-card-foreground shadow-sm border-muted/50">
                     <div className="flex flex-col items-center text-center space-y-4">
                         <Avatar
                             name={author.name}
@@ -41,7 +41,7 @@ export default function AuthorProfilePage({ params }: { params: Promise<{ userna
                             <Text className="text-sm text-muted-foreground italic">@{author.username}</Text>
                         </div>
                         <Text className="text-sm leading-relaxed">
-                            {author.bio || 'This author hasn\'t shared a bio yet.'}
+                            {author.bio || 'This author hasn&apos;t shared a bio yet.'}
                         </Text>
                     </div>
 
@@ -62,7 +62,7 @@ export default function AuthorProfilePage({ params }: { params: Promise<{ userna
                     </div>
 
                     <Button className="w-full rounded-full">Follow Author</Button>
-                </Card>
+                </div>
 
                 {/* Author Workflows */}
                 <div className="flex-1 space-y-6">
@@ -79,7 +79,7 @@ export default function AuthorProfilePage({ params }: { params: Promise<{ userna
                         </div>
                     ) : (
                         <div className="py-20 text-center border border-dashed rounded-lg bg-muted/5">
-                            <Text className="text-muted-foreground">This author hasn't contributed any workflows yet.</Text>
+                            <Text className="text-muted-foreground">This author hasn&apos;t contributed any workflows yet.</Text>
                         </div>
                     )}
                 </div>

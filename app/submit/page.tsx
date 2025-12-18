@@ -1,15 +1,9 @@
 'use client';
 
-import { useState } from 'react';
-import { Title, Text, Input, Textarea, Select, Button, Card } from 'rizzui';
+import { Title, Text, Input, Textarea, Select, Button } from 'rizzui';
 import {
-    Upload,
-    Terminal,
-    Tag as TagIcon,
-    Link as LinkIcon,
     AlertCircle,
-    FileJson,
-    CheckCircle2
+    FileJson
 } from 'lucide-react';
 
 const difficultyOptions = [
@@ -19,8 +13,6 @@ const difficultyOptions = [
 ];
 
 export default function SubmitPage() {
-    const [submitted, setSubmitted] = useState(false);
-
     return (
         <div className="max-w-3xl mx-auto py-12 space-y-8">
             <div className="space-y-2">
@@ -30,7 +22,7 @@ export default function SubmitPage() {
                 </Text>
             </div>
 
-            <Card className="p-8 space-y-8 border-muted/50">
+            <div className="p-8 space-y-8 border rounded-lg bg-card text-card-foreground shadow-sm border-muted/50">
                 <div className="grid grid-cols-1 md:grid-cols-2 gap-6">
                     <div className="md:col-span-2 space-y-2">
                         <Text className="text-sm font-bold uppercase text-muted-foreground">Workflow Title</Text>
@@ -83,7 +75,7 @@ export default function SubmitPage() {
 
                 <div className="pt-6 border-t flex flex-col md:flex-row items-center justify-between gap-4">
                     <div className="flex items-center gap-2 text-xs text-muted-foreground">
-                        <CheckCircle2 className="w-4 h-4 text-green-500" />
+                        <AlertCircle className="w-4 h-4 text-green-500" />
                         <span>By submitting, you agree to the open-source license.</span>
                     </div>
                     <Button size="lg" disabled className="rounded-full w-full md:w-auto px-10">
@@ -101,7 +93,7 @@ export default function SubmitPage() {
                         </Text>
                     </div>
                 </div>
-            </Card>
+            </div>
         </div>
     );
 }
