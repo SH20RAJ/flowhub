@@ -19,10 +19,13 @@ export const workflows = sqliteTable('workflows', {
     description: text('description'),
     slug: text('slug').unique().notNull(),
     json: text('json').notNull(),
+    jsonUrl: text('json_url'), // Link to raw JSON
     hash: text('hash').unique(),
     difficulty: text('difficulty'), // Beginner, Intermediate, Advanced
+    nodeCount: integer('node_count'),
+    preview: text('preview'), // Preview text/string
     isVerified: integer('is_verified', { mode: 'boolean' }).default(false),
-    sourceType: text('source_type'), // community, github
+    sourceType: text('source_type'), // community, github, url
     sourceUrl: text('source_url'),
     license: text('license'),
     authorId: text('author_id').references(() => users.id),
