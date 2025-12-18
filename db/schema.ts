@@ -63,3 +63,40 @@ export const sources = sqliteTable('sources', {
     repo: text('repo').notNull(),
     lastSyncedAt: text('last_synced_at').default(sql`CURRENT_TIMESTAMP`),
 });
+
+import { relations } from 'drizzle-orm';
+
+export const workflowsRelations = relations(workflows, ({ one, many }) => ({
+    author: one(users, {
+        fields: [workflows.authorId],
+        references: [users.id],
+    }),
+    tags: many(workflowTags),
+    nodes: many(workflowNodes),
+}));
+
+export const workflowTagsRelations = relations(workflowTags, ({ one }) => ({
+    workflow: one(workflows, {
+        fields: [workflowTags.workflowId],
+        references: [workflows.id],
+    }),
+    tag: one(tags, {
+        fields: [workflowTags.tagId],
+        references: [tags.id],
+    }),
+}));
+
+export const workflowNodesRelations = relations(workflowNodes, ({ one }) => ({
+    workflow: one(workflows, {
+        fields: [workflowNodes.workflowId],
+        references: [workflows.id],
+    }),
+    node: one(nodes, {
+        fields: [workflowNodes.nodeId],
+        references: [nodes.id],
+    }),
+}));
+
+export const usersRelations = relations(users, ({ many }) => ({
+    workflows: many(workflows),
+}));

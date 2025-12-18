@@ -1,7 +1,10 @@
-import { workflows, authors } from '@/data/mock';
 import { notFound } from 'next/navigation';
 import { Metadata } from 'next';
 import { WorkflowDetailContent } from './WorkflowDetailContent';
+import { db } from '@/db';
+import { workflows } from '@/db/schema';
+import { eq } from 'drizzle-orm';
+import { Workflow, Author } from '@/data/mock';
 
 interface Props {
     params: Promise<{ slug: string }>;
@@ -9,23 +12,34 @@ interface Props {
 
 export async function generateMetadata({ params }: Props): Promise<Metadata> {
     const { slug } = await params;
-    const workflow = workflows.find((w) => w.slug === slug);
+
+    const workflow = await db.query.workflows.findFirst({
+        where: eq(workflows.slug, slug),
+        with: {
+            author: true,
+            tags: {
+                with: {
+                    tag: true
+                }
+            }
+        }
+    });
 
     if (!workflow) return {};
 
-    const author = authors.find((a) => a.id === workflow.authorId);
+    const tagsList = workflow.tags.map(t => t.tag.name);
 
     return {
         title: workflow.title,
-        description: workflow.description,
+        description: workflow.description || '',
         openGraph: {
             title: workflow.title,
-            description: workflow.description,
+            description: workflow.description || '',
             type: 'article',
-            publishedTime: workflow.createdAt,
-            modifiedTime: workflow.updatedAt,
-            authors: author ? [author.name] : undefined,
-            tags: workflow.tags,
+            publishedTime: workflow.createdAt || undefined,
+            modifiedTime: workflow.updatedAt || undefined,
+            authors: workflow.author ? [workflow.author.name || ''] : undefined,
+            tags: tagsList,
             images: [
                 {
                     url: `/api/og?title=${encodeURIComponent(workflow.title)}`, // Idealized OG generation
@@ -38,20 +52,67 @@ export async function generateMetadata({ params }: Props): Promise<Metadata> {
         twitter: {
             card: 'summary_large_image',
             title: workflow.title,
-            description: workflow.description,
+            description: workflow.description || '',
         },
     };
 }
 
 export default async function Page({ params }: Props) {
     const { slug } = await params;
-    const workflow = workflows.find((w) => w.slug === slug);
 
-    if (!workflow) {
+    const workflowData = await db.query.workflows.findFirst({
+        where: eq(workflows.slug, slug),
+        with: {
+            author: true,
+            tags: {
+                with: {
+                    tag: true
+                }
+            },
+            nodes: {
+                with: {
+                    node: true
+                }
+            }
+        }
+    });
+
+    if (!workflowData) {
         notFound();
     }
 
-    const author = authors.find((a) => a.id === workflow.authorId);
+    // Map DB result to Mock interfaces expected by UI components
+    // This bridges the gap until we fully remove Mock types
+    const workflow: Workflow = {
+        id: workflowData.id,
+        title: workflowData.title,
+        description: workflowData.description || '',
+        slug: workflowData.slug,
+        json: workflowData.json,
+        difficulty: (workflowData.difficulty as any) || 'Beginner',
+        source: (workflowData.sourceType as any) || 'community', // Map sourceType to source
+        authorId: workflowData.authorId || '',
+        createdAt: workflowData.createdAt || new Date().toISOString(),
+        updatedAt: workflowData.updatedAt || new Date().toISOString(),
+        downloads: 0, // Not in DB yet
+        views: 0, // Not in DB yet
+        tags: workflowData.tags.map(t => t.tag.name),
+        nodes: workflowData.nodes.map(n => n.node.name),
+        license: workflowData.license || 'MIT',
+    };
+
+    const author: Author | undefined = workflowData.author ? {
+        id: workflowData.author.id,
+        name: workflowData.author.name || 'Anonymous',
+        username: workflowData.author.username || 'user',
+        avatar: workflowData.author.avatarUrl || '',
+        bio: workflowData.author.bio || '',
+        role: 'User', // Default
+        github: workflowData.author.github || undefined,
+        website: workflowData.author.website || undefined,
+        twitter: undefined,
+        workflowsCount: 0, // Need aggregation for this
+    } : undefined;
 
     // JSON-LD Structured Data
     const jsonLd = {
