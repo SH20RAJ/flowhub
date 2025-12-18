@@ -19,7 +19,6 @@ import {
 } from 'lucide-react';
 import Link from 'next/link';
 import { ROUTES } from '@/constants/routes';
-import { slugify } from '@/utils/slug';
 
 export default function WorkflowDetailPage({ params }: { params: Promise<{ slug: string }> }) {
     const { slug } = use(params);

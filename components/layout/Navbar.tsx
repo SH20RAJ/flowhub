@@ -1,7 +1,6 @@
 'use client';
 
 import Link from 'next/link';
-import { useRouter } from 'next/navigation';
 import { useState } from 'react';
 import { ThemeToggle } from './ThemeToggle';
 import { Github, Menu } from 'lucide-react';
@@ -10,7 +9,6 @@ import { SearchBar } from '@/components/workflows/SearchBar';
 import { ROUTES } from '@/constants/routes';
 
 export function Navbar({ onMenuClick }: { onMenuClick: () => void }) {
-    const router = useRouter();
     const [search, setSearch] = useState('');
 
     const handleSearch = (val: string) => {

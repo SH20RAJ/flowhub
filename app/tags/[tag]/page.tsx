@@ -2,7 +2,7 @@
 
 import { use } from 'react';
 import { workflows } from '@/data/mock';
-import { Title, Text, Button } from 'rizzui';
+import { Title, Text } from 'rizzui';
 import { WorkflowCard } from '@/components/workflows/WorkflowCard';
 import Link from 'next/link';
 import { ArrowLeft, Tag as TagIcon } from 'lucide-react';
@@ -47,7 +47,7 @@ export default function TagDetailPage({ params }: { params: Promise<{ tag: strin
                     {filteredWorkflows.map((workflow) => (
                         <WorkflowCard
                             key={workflow.id}
-                            workflow={workflow as any}
+                            workflow={workflow}
                         />
                     ))}
                 </div>

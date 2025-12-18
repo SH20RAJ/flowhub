@@ -113,7 +113,7 @@ export default function AuthorProfilePage({ params }: { params: Promise<{ userna
                     {authorWorkflows.length > 0 ? (
                         <div className="grid grid-cols-1 xl:grid-cols-2 gap-8">
                             {authorWorkflows.map((workflow) => (
-                                <WorkflowCard key={workflow.id} workflow={workflow as any} />
+                                <WorkflowCard key={workflow.id} workflow={workflow} />
                             ))}
                         </div>
                     ) : (

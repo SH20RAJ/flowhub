@@ -9,7 +9,6 @@ import { WorkflowTable } from '@/components/workflows/WorkflowTable';
 import { SearchBar } from '@/components/workflows/SearchBar';
 import { FilterPanel } from '@/components/workflows/FilterPanel';
 import { cn } from '@/lib/utils';
-import { Difficulty } from '@/constants/enums';
 
 export default function WorkflowsPage() {
     const [view, setView] = useState<'grid' | 'table'>('grid');

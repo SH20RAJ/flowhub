@@ -10,7 +10,6 @@ import {
     CheckCircle2
 } from 'lucide-react';
 import { DIFFICULTY_OPTIONS } from '@/constants/enums';
-import { cn } from '@/lib/utils';
 
 export default function SubmitPage() {
     return (

@@ -5,7 +5,7 @@ import { workflows, nodes } from '@/data/mock';
 import { Title, Text, Button } from 'rizzui';
 import { WorkflowCard } from '@/components/workflows/WorkflowCard';
 import Link from 'next/link';
-import { ArrowLeft, Box, Download, ExternalLink } from 'lucide-react';
+import { ArrowLeft, Box, ExternalLink } from 'lucide-react';
 import { notFound } from 'next/navigation';
 import { ROUTES } from '@/constants/routes';
 import { EmptyState } from '@/components/ui/EmptyState';
@@ -67,7 +67,7 @@ export default function NodeDetailPage({ params }: { params: Promise<{ node: str
                         {filteredWorkflows.length > 0 ? (
                             <div className="grid grid-cols-1 md:grid-cols-2 gap-8">
                                 {filteredWorkflows.map((workflow) => (
-                                    <WorkflowCard key={workflow.id} workflow={workflow as any} />
+                                    <WorkflowCard key={workflow.id} workflow={workflow} />
                                 ))}
                             </div>
                         ) : (
