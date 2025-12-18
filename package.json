@@ -14,6 +14,7 @@
 	},
 	"dependencies": {
 		"@opennextjs/cloudflare": "^1.14.4",
+		"@tailwindcss/postcss": "^4.1.18",
 		"clsx": "^2.1.1",
 		"lucide-react": "^0.561.0",
 		"next": "15.5.9",
@@ -22,17 +23,18 @@
 		"react": "19.1.4",
 		"react-dom": "19.1.4",
 		"rizzui": "^2.0.0",
-		"tailwind-merge": "^3.4.0"
+		"tailwind-merge": "^3.4.0",
+		"tailwind-variants": "3.1.1",
+		"tailwindcss": "^4.0.0",
+		"tailwindcss-animate": "^1.0.7"
 	},
 	"devDependencies": {
 		"@eslint/eslintrc": "^3",
-		"@tailwindcss/postcss": "^4.1.18",
 		"@types/node": "^25.0.3",
 		"@types/react": "^19",
 		"@types/react-dom": "^19",
 		"eslint": "^9",
 		"eslint-config-next": "15.4.6",
-		"tailwindcss": "^4",
 		"typescript": "^5",
 		"wrangler": "^4.55.0"
 	}
