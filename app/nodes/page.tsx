@@ -1,67 +1,82 @@
 'use client';
 
-import { useState } from 'react';
+import { useState, useMemo } from 'react';
 import { nodes, workflows } from '@/data/mock';
-import { Title, Text, Input } from 'rizzui';
+import { Title, Text } from 'rizzui';
 import Link from 'next/link';
-import { Box, Search, ArrowRight } from 'lucide-react';
+import { Box, ArrowRight } from 'lucide-react';
+import { SearchBar } from '@/components/workflows/SearchBar';
+import { ROUTES } from '@/constants/routes';
+import { EmptyState } from '@/components/ui/EmptyState';
 
 export default function NodesPage() {
     const [search, setSearch] = useState('');
 
-    const nodeStats = nodes.map(node => ({
-        ...node,
-        count: workflows.filter(w => w.nodes.includes(node.id)).length
-    })).filter(n => n.name.toLowerCase().includes(search.toLowerCase()))
-        .sort((a, b) => a.name.localeCompare(b.name));
+    const nodeStats = useMemo(() => {
+        return nodes.map(node => ({
+            ...node,
+            count: workflows.filter(w => w.nodes.includes(node.id)).length
+        })).filter(n =>
+            n.name.toLowerCase().includes(search.toLowerCase()) ||
+            n.description?.toLowerCase().includes(search.toLowerCase())
+        ).sort((a, b) => b.count - a.count || a.name.localeCompare(b.name));
+    }, [search]);
 
     return (
-        <div className="space-y-8 py-8">
-            <div className="flex flex-col md:flex-row md:items-end justify-between gap-4">
-                <div className="space-y-2">
-                    <Title as="h1" className="text-3xl font-bold">Nodes</Title>
-                    <Text className="text-muted-foreground">Library of all n8n nodes used in community workflows.</Text>
+        <div className="space-y-12 py-4 animate-in fade-in duration-700">
+            <div className="flex flex-col lg:flex-row lg:items-end justify-between gap-8 pb-10 border-b border-muted/50">
+                <div className="space-y-3 max-w-2xl">
+                    <Title as="h1" className="text-4xl font-black tracking-tighter">Node Registry</Title>
+                    <Text className="text-muted-foreground text-lg font-medium leading-relaxed">
+                        The fundamental building blocks of n8n. Browse nodes used across our workflow library.
+                    </Text>
                 </div>
-                <div className="relative w-full md:w-80">
-                    <Search className="absolute left-3 top-3 h-4 w-4 text-muted-foreground" />
-                    <Input
-                        type="search"
-                        placeholder="Search nodes..."
-                        className="pl-10 h-10 w-full"
+                <div className="w-full lg:w-96">
+                    <SearchBar
                         value={search}
-                        onChange={(e) => setSearch(e.target.value)}
+                        onChange={setSearch}
+                        placeholder="Filter nodes by name..."
+                        onClear={() => setSearch('')}
                     />
                 </div>
             </div>
 
-            <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-4">
-                {nodeStats.map((node) => (
-                    <Link key={node.id} href={`/nodes/${node.id}`}>
-                        <div className="p-5 border rounded-lg bg-card text-card-foreground shadow-sm hover:border-primary/50 transition-all group flex items-start gap-4">
-                            <div className="p-3 rounded-lg bg-muted text-muted-foreground group-hover:bg-primary group-hover:text-primary-foreground transition-colors shrink-0">
-                                <Box className="w-6 h-6" />
-                            </div>
-                            <div className="flex-1 space-y-1">
-                                <div className="flex items-center justify-between">
-                                    <Title as="h3" className="text-base font-bold">{node.name}</Title>
-                                    <Text className="text-[11px] font-mono text-muted-foreground">{node.count} uses</Text>
+            {nodeStats.length > 0 ? (
+                <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-6">
+                    {nodeStats.map((node) => (
+                        <Link key={node.id} href={ROUTES.NODE_DETAIL(node.id)} className="group">
+                            <div className="p-8 border-2 border-muted/30 rounded-3xl bg-card/30 backdrop-blur-sm shadow-sm hover:border-primary/50 transition-all group-hover:shadow-xl group-hover:shadow-primary/5 h-full flex items-start gap-6 overflow-hidden relative">
+                                <div className="p-4 rounded-2xl bg-muted/50 text-muted-foreground group-hover:bg-primary group-hover:text-primary-foreground transition-all duration-300 shadow-inner shrink-0 scale-110">
+                                    <Box className="w-7 h-7" />
                                 </div>
-                                <Text className="text-sm text-muted-foreground line-clamp-2 leading-snug">
-                                    {node.description || 'No description available for this node.'}
-                                </Text>
-                                <div className="pt-2 flex items-center text-[11px] font-semibold text-primary opacity-0 group-hover:opacity-100 transition-opacity">
-                                    View workflows <ArrowRight className="w-3.5 h-3.5 ml-1" />
+                                <div className="flex-1 space-y-3 relative z-10">
+                                    <div className="flex items-start justify-between">
+                                        <Title as="h3" className="text-lg font-black tracking-tight group-hover:text-primary transition-colors">{node.name}</Title>
+                                        <span className="text-[10px] font-black font-mono bg-primary/5 text-primary px-2 py-1 rounded-md uppercase tracking-wider">
+                                            {node.count} flows
+                                        </span>
+                                    </div>
+                                    <Text className="text-sm text-muted-foreground/80 font-medium line-clamp-2 leading-relaxed">
+                                        {node.description || 'Native n8n node for seamless automation and data processing.'}
+                                    </Text>
+                                    <div className="pt-4 flex items-center text-[10px] font-black uppercase tracking-[0.2em] text-primary translate-y-2 opacity-0 group-hover:translate-y-0 group-hover:opacity-100 transition-all duration-300">
+                                        Explore Node <ArrowRight className="w-4 h-4 ml-2" />
+                                    </div>
                                 </div>
                             </div>
-                        </div>
-                    </Link>
-                ))}
-                {nodeStats.length === 0 && (
-                    <div className="col-span-full py-20 text-center border border-dashed rounded-lg bg-muted/5">
-                        <Text className="text-muted-foreground">No nodes found matching your search.</Text>
-                    </div>
-                )}
-            </div>
+                        </Link>
+                    ))}
+                </div>
+            ) : (
+                <EmptyState
+                    title="Node not found"
+                    description={`We couldn't find any nodes matching "${search}". Try searching for specific tools like "Slack" or "Discord".`}
+                    action={{
+                        label: "View All Nodes",
+                        onClick: () => setSearch('')
+                    }}
+                />
+            )}
         </div>
     );
 }
