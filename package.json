@@ -11,6 +11,7 @@
 		"upload": "opennextjs-cloudflare build && opennextjs-cloudflare upload",
 		"preview": "opennextjs-cloudflare build && opennextjs-cloudflare preview",
 		"import:github": "bun scripts/importers/github/index.ts",
+		"import:ritik": "bun scripts/importers/ritik/index.ts",
 		"cf-typegen": "wrangler types --env-interface CloudflareEnv ./cloudflare-env.d.ts"
 	},
 	"dependencies": {
