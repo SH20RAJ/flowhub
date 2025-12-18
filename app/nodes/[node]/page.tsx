@@ -59,6 +59,7 @@ export default async function Page({ params }: Props) {
 
     const nodeName = nodeData.name;
 
+    // eslint-disable-next-line @typescript-eslint/no-explicit-any
     const filteredWorkflows: Workflow[] = (nodeData.workflowNodes as any[]).map(wn => {
         const w = wn.workflow;
         return {
@@ -67,14 +68,18 @@ export default async function Page({ params }: Props) {
             description: w.description || '',
             slug: w.slug,
             json: w.json,
+            // eslint-disable-next-line @typescript-eslint/no-explicit-any
             difficulty: (w.difficulty as any) || 'Beginner',
+            // eslint-disable-next-line @typescript-eslint/no-explicit-any
             source: (w.sourceType as any) || 'community',
             authorId: w.authorId || '',
             createdAt: w.createdAt || new Date().toISOString(),
             updatedAt: w.updatedAt || new Date().toISOString(),
             downloads: 0,
             views: 0,
+            // eslint-disable-next-line @typescript-eslint/no-explicit-any
             tags: w.tags.map((t: any) => t.tag.name),
+            // eslint-disable-next-line @typescript-eslint/no-explicit-any
             nodes: w.nodes.map((n: any) => n.node.name),
             license: w.license || 'MIT',
         };

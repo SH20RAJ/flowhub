@@ -1,8 +1,8 @@
 import { HomeContent } from './HomeContent';
 import { Metadata } from 'next';
 import { db } from '@/db';
-import { workflows, tags } from '@/db/schema';
-import { desc, sql } from 'drizzle-orm';
+import { workflows } from '@/db/schema';
+import { desc } from 'drizzle-orm';
 
 export const metadata: Metadata = {
 	title: "Flowhub - n8n Workflow Sharing Platform",
@@ -54,12 +54,14 @@ export default async function HomePage() {
 	// DB has snake_case fields? No, Drizzle schema uses camelCase for JS side usually if defined that way?
 	// references are `createdAt` in schema.ts.
 
+	// eslint-disable-next-line @typescript-eslint/no-explicit-any
 	const mapWorkflow = (w: any) => ({
 		...w,
 		difficulty: w.difficulty || 'Beginner',
+		// eslint-disable-next-line @typescript-eslint/no-explicit-any
 		tags: w.tags.map((t: any) => t.tag.name),
+		// eslint-disable-next-line @typescript-eslint/no-explicit-any
 		nodes: w.nodes.map((n: any) => n.node.name),
-		// Additional mapping if HomeContent expects specific shapes
 	});
 
 	return (

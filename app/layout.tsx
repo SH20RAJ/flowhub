@@ -1,6 +1,5 @@
 import type { Metadata, Viewport } from "next";
 import { StackAuthProvider } from "@/components/providers/StackAuthProvider";
-import { stackClientApp } from "../stack/client";
 import { Inter } from "next/font/google";
 import "./globals.css";
 import { ThemeProvider } from "@/components/layout/ThemeProvider";

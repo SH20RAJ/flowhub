@@ -89,13 +89,13 @@ export default async function Page({ params }: Props) {
         description: workflowData.description || '',
         slug: workflowData.slug,
         json: workflowData.json,
+        // eslint-disable-next-line @typescript-eslint/no-explicit-any
         difficulty: (workflowData.difficulty as any) || 'Beginner',
+        // eslint-disable-next-line @typescript-eslint/no-explicit-any
         source: (workflowData.sourceType as any) || 'community', // Map sourceType to source
         authorId: workflowData.authorId || '',
         createdAt: workflowData.createdAt || new Date().toISOString(),
         updatedAt: workflowData.updatedAt || new Date().toISOString(),
-        downloads: 0, // Not in DB yet
-        views: 0, // Not in DB yet
         tags: workflowData.tags.map(t => t.tag.name),
         nodes: workflowData.nodes.map(n => n.node.name),
         license: workflowData.license || 'MIT',
@@ -107,11 +107,8 @@ export default async function Page({ params }: Props) {
         username: workflowData.author.username || 'user',
         avatar: workflowData.author.avatarUrl || '',
         bio: workflowData.author.bio || '',
-        role: 'User', // Default
         github: workflowData.author.github || undefined,
         website: workflowData.author.website || undefined,
-        twitter: undefined,
-        workflowsCount: 0, // Need aggregation for this
     } : undefined;
 
     // JSON-LD Structured Data

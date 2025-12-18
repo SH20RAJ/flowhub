@@ -2,7 +2,7 @@ import { notFound } from 'next/navigation';
 import { Metadata } from 'next';
 import { AuthorProfileContent } from './AuthorProfileContent';
 import { db } from '@/db';
-import { users, workflows } from '@/db/schema';
+import { users } from '@/db/schema';
 import { eq } from 'drizzle-orm';
 import { Workflow, Author } from '@/data/mock';
 
@@ -65,7 +65,9 @@ export default async function Page({ params }: Props) {
         description: w.description || '',
         slug: w.slug,
         json: w.json,
+        // eslint-disable-next-line @typescript-eslint/no-explicit-any
         difficulty: (w.difficulty as any) || 'Beginner',
+        // eslint-disable-next-line @typescript-eslint/no-explicit-any
         source: (w.sourceType as any) || 'community',
         authorId: w.authorId || '',
         createdAt: w.createdAt || new Date().toISOString(),
