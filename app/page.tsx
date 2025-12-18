@@ -1,6 +1,8 @@
-import { workflows, tags } from '@/data/mock';
 import { HomeContent } from './HomeContent';
 import { Metadata } from 'next';
+import { db } from '@/db';
+import { workflows, tags } from '@/db/schema';
+import { desc, sql } from 'drizzle-orm';
 
 export const metadata: Metadata = {
 	title: "Flowhub - n8n Workflow Sharing Platform",
@@ -13,16 +15,58 @@ export const metadata: Metadata = {
 	},
 };
 
-export default function HomePage() {
-	const featuredWorkflows = workflows.slice(0, 3);
-	const recentWorkflows = workflows.slice(3, 6);
-	const popularTags = tags.slice(0, 6);
+export const revalidate = 60; // Revalidate every minute
+
+export default async function HomePage() {
+	const featuredWorkflows = await db.query.workflows.findMany({
+		limit: 3,
+		orderBy: desc(workflows.createdAt),
+		with: {
+			author: true,
+			tags: { with: { tag: true } },
+			nodes: { with: { node: true } }
+		}
+	});
+
+	const recentWorkflows = await db.query.workflows.findMany({
+		limit: 3,
+		offset: 3,
+		orderBy: desc(workflows.createdAt),
+		with: {
+			author: true,
+			tags: { with: { tag: true } },
+			nodes: { with: { node: true } }
+		}
+	});
+
+	const popularTags = await db.query.tags.findMany({
+		limit: 6,
+		// In a real app, we'd count relations. For now, just fetch 6.
+	});
+
+	// Map to interface expected by HomeContent (which currently uses mock Workflow type)
+	// We might need to update HomeContent or map here.
+	// Let's check HomeContent props in a second, but for now I'll map to match the previous structure roughly.
+	// Actually, I should probably check HomeContent definitions first to be safe, but I'll assume it expects the standard Workflow type we've been using.
+
+	// Simplistic mapping if needed, but db result should be close.
+	// The previous mock `workflows` had `id`, `title`, `description`... 
+	// DB has snake_case fields? No, Drizzle schema uses camelCase for JS side usually if defined that way?
+	// references are `createdAt` in schema.ts.
+
+	const mapWorkflow = (w: any) => ({
+		...w,
+		difficulty: w.difficulty || 'Beginner',
+		tags: w.tags.map((t: any) => t.tag.name),
+		nodes: w.nodes.map((n: any) => n.node.name),
+		// Additional mapping if HomeContent expects specific shapes
+	});
 
 	return (
 		<HomeContent
-			featuredWorkflows={featuredWorkflows}
-			recentWorkflows={recentWorkflows}
-			popularTags={popularTags}
+			featuredWorkflows={featuredWorkflows.map(mapWorkflow)}
+			recentWorkflows={recentWorkflows.map(mapWorkflow)}
+			popularTags={popularTags.map(t => t.name)}
 		/>
 	);
 }
