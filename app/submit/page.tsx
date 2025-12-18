@@ -6,17 +6,19 @@ import {
     FileJson,
     ArrowRight,
     ShieldCheck,
-    Zap,
-    CheckCircle2,
     Lock
 } from 'lucide-react';
 import { DIFFICULTY_OPTIONS } from '@/constants/enums';
 import { useUser, useStackApp } from '@stackframe/stack';
 import { Skeleton } from '@/components/ui/LoadingSkeleton';
+import { useState, useTransition } from 'react';
+import { submitWorkflow } from './actions';
 
 export default function SubmitPage() {
     const user = useUser();
     const app = useStackApp();
+    const [isPending, startTransition] = useTransition();
+    const [error, setError] = useState<string | null>(null);
 
     if (user === undefined) {
         return (
@@ -49,6 +51,18 @@ export default function SubmitPage() {
         );
     }
 
+    async function handleSubmit(formData: FormData) {
+        setError(null);
+        startTransition(async () => {
+            try {
+                await submitWorkflow(formData);
+            } catch (e: unknown) {
+                const message = e instanceof Error ? e.message : 'Something went wrong';
+                setError(message);
+            }
+        });
+    }
+
     return (
         <div className="max-w-4xl mx-auto py-8 space-y-12 animate-in fade-in duration-700">
             <div className="space-y-4 max-w-2xl">
@@ -58,8 +72,13 @@ export default function SubmitPage() {
                 </Text>
             </div>
 
-            <div className="grid grid-cols-1 lg:grid-cols-3 gap-12">
+            <form action={handleSubmit} className="grid grid-cols-1 lg:grid-cols-3 gap-12">
                 <div className="lg:col-span-2 p-10 space-y-10 border-2 border-muted/30 rounded-[2.5rem] bg-card/30 backdrop-blur-xl shadow-2xl shadow-black/5">
+                    {error && (
+                        <div className="p-4 rounded-xl bg-red-500/10 border border-red-500/20 text-red-500 text-sm font-bold flex items-center gap-3">
+                            <AlertCircle className="w-5 h-5" /> {error}
+                        </div>
+                    )}
                     <div className="grid grid-cols-1 md:grid-cols-2 gap-8">
                         <div className="md:col-span-2 space-y-2">
                             <label htmlFor="title" className="text-[10px] font-black uppercase tracking-[0.2em] text-muted-foreground/70 ml-1">
@@ -67,6 +86,8 @@ export default function SubmitPage() {
                             </label>
                             <Input
                                 id="title"
+                                name="title"
+                                required
                                 placeholder="e.g., Slack to Google Sheets Reporter"
                                 className="h-14 font-bold text-sm bg-background/50 border-muted/50 focus:border-primary transition-all rounded-2xl"
                             />
@@ -78,6 +99,7 @@ export default function SubmitPage() {
                             </label>
                             <Textarea
                                 id="description"
+                                name="description"
                                 placeholder="Explain the core functionality and any specific prerequisites..."
                                 rows={4}
                                 className="font-medium bg-background/50 border-muted/50 focus:border-primary transition-all rounded-2xl p-4"
@@ -89,7 +111,8 @@ export default function SubmitPage() {
                                 Difficulty Level
                             </label>
                             <Select
-                                options={DIFFICULTY_OPTIONS}
+                                name="difficulty"
+                                options={DIFFICULTY_OPTIONS.filter(o => o.value !== 'all')}
                                 className="w-full"
                                 dropdownClassName="rounded-xl border-muted/50 shadow-xl"
                             />
@@ -101,6 +124,7 @@ export default function SubmitPage() {
                             </label>
                             <Input
                                 id="tags"
+                                name="tags"
                                 placeholder="AI, Productivity, Slack"
                                 className="h-14 font-bold text-sm bg-background/50 border-muted/50 focus:border-primary transition-all rounded-2xl"
                             />
@@ -118,6 +142,8 @@ export default function SubmitPage() {
                             <div className="relative group">
                                 <Textarea
                                     id="json"
+                                    name="json"
+                                    required
                                     placeholder="Paste your n8n workflow JSON exported from the editor..."
                                     rows={12}
                                     className="font-mono text-[11px] bg-black/20 border-muted/50 focus:border-primary transition-all rounded-2xl p-6 leading-relaxed"
@@ -139,53 +165,16 @@ export default function SubmitPage() {
                             <ShieldCheck className="w-4 h-4 text-emerald-500" />
                             <span>GPL-3.0 Submission License</span>
                         </div>
-                        <Button size="lg" disabled className="rounded-2xl w-full md:w-auto px-12 h-14 font-black uppercase tracking-[0.15em] shadow-xl shadow-primary/10">
-                            Submit Draft <ArrowRight className="w-5 h-5 ml-3" />
+                        <Button
+                            type="submit"
+                            isLoading={isPending}
+                            className="rounded-2xl w-full md:w-auto px-12 h-14 font-black uppercase tracking-[0.15em] shadow-xl shadow-primary/10"
+                        >
+                            Submit Workflow <ArrowRight className="w-5 h-5 ml-3" />
                         </Button>
                     </div>
                 </div>
-
-                <aside className="space-y-8">
-                    <div className="p-8 space-y-6 border rounded-3xl bg-primary/5 border-primary/10 relative overflow-hidden group">
-                        <Zap className="absolute -right-4 -top-4 w-24 h-24 text-primary/5 transform -rotate-12 transition-transform group-hover:scale-110" />
-                        <div className="relative z-10 space-y-4">
-                            <Title as="h3" className="text-xl font-black tracking-tight">System Status</Title>
-                            <div className="p-4 rounded-2xl bg-white/5 border border-primary/20 space-y-3">
-                                <div className="flex items-center gap-3">
-                                    <CheckCircle2 className="w-5 h-5 text-primary" />
-                                    <span className="text-xs font-bold">Authenticated as {user.primaryEmail}</span>
-                                </div>
-                                <div className="flex items-center gap-3 opacity-50">
-                                    <div className="w-5 h-5 rounded-full border-2 border-primary/30 flex items-center justify-center">
-                                        <div className="w-2 h-2 rounded-full bg-primary/30 animate-pulse" />
-                                    </div>
-                                    <span className="text-xs font-bold">Backend Pending</span>
-                                </div>
-                            </div>
-                            <Text className="text-[11px] font-medium text-muted-foreground leading-relaxed">
-                                The contribution engine is currently in <strong>Preview Mode</strong>. Submissions won&apos;t be persisted to the database yet.
-                            </Text>
-                        </div>
-                    </div>
-
-                    <div className="p-8 space-y-6 border rounded-3xl border-muted/30 bg-card/30">
-                        <Title as="h3" className="text-[10px] font-black uppercase tracking-[0.2em] text-muted-foreground/60">Submission Checklist</Title>
-                        <ul className="space-y-4">
-                            {[
-                                "Valid JSON structure",
-                                "Clear, descriptive title",
-                                "Anonymized environment variables",
-                                "Relevant tags attached"
-                            ].map((item, i) => (
-                                <li key={i} className="flex items-center gap-3 text-xs font-bold text-muted-foreground/80">
-                                    <div className="w-1.5 h-1.5 rounded-full bg-primary/40" />
-                                    {item}
-                                </li>
-                            ))}
-                        </ul>
-                    </div>
-                </aside>
-            </div>
+            </form>
         </div>
     );
 }

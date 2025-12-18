@@ -11,23 +11,32 @@ import {
     PlusCircle,
     Info,
     ChevronLeft,
-    ChevronRight
+    ChevronRight,
+    UserCircle,
+    LayoutDashboard
 } from 'lucide-react';
 import { ActionIcon, Tooltip } from 'rizzui';
 import { useState, useEffect } from 'react';
 import { ROUTES } from '@/constants/routes';
+import { useUser } from '@stackframe/stack';
 
 const navigation = [
     { name: 'Home', href: ROUTES.HOME, icon: Home },
     { name: 'Workflows', href: ROUTES.WORKFLOWS, icon: Workflow },
     { name: 'Tags', href: ROUTES.TAGS, icon: Tag },
     { name: 'Nodes', href: ROUTES.NODES, icon: Box },
-    { name: 'Submit Workflow', href: ROUTES.SUBMIT, icon: PlusCircle },
     { name: 'About', href: ROUTES.ABOUT, icon: Info },
+];
+
+const authNavigation = [
+    { name: 'My Workflows', href: '/my-workflows', icon: LayoutDashboard },
+    { name: 'Profile Settings', href: '/profile', icon: UserCircle },
+    { name: 'Submit Workflow', href: ROUTES.SUBMIT, icon: PlusCircle },
 ];
 
 export function Sidebar({ isOpen, setIsOpen }: { isOpen: boolean, setIsOpen: (val: boolean) => void }) {
     const pathname = usePathname();
+    const user = useUser();
     const [collapsed, setCollapsed] = useState(false);
     const [mounted, setMounted] = useState(false);
 
@@ -49,6 +58,8 @@ export function Sidebar({ isOpen, setIsOpen }: { isOpen: boolean, setIsOpen: (va
 
     if (!mounted) return null;
 
+    const navItems = user ? [...navigation, ...authNavigation] : [...navigation, { name: 'Submit Workflow', href: ROUTES.SUBMIT, icon: PlusCircle }];
+
     return (
         <aside
             className={cn(
@@ -59,7 +70,7 @@ export function Sidebar({ isOpen, setIsOpen }: { isOpen: boolean, setIsOpen: (va
         >
             <div className="flex h-full flex-col gap-4 p-4">
                 <nav className="flex-1 space-y-2">
-                    {navigation.map((item) => {
+                    {navItems.map((item) => {
                         const isActive = pathname === item.href;
                         const content = (
                             <Link

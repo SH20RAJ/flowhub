@@ -12,11 +12,13 @@ import {
     Calendar,
     Globe,
     ShieldCheck,
-    Github
+    Github,
+    Settings
 } from 'lucide-react';
 import Link from 'next/link';
 import { ROUTES } from '@/constants/routes';
 import { Workflow, Author } from '@/data/mock';
+import { useUser } from '@stackframe/stack';
 
 interface WorkflowDetailContentProps {
     workflow: Workflow;
@@ -24,6 +26,9 @@ interface WorkflowDetailContentProps {
 }
 
 export function WorkflowDetailContent({ workflow, author }: WorkflowDetailContentProps) {
+    const user = useUser();
+    const isOwner = user?.id === workflow.authorId;
+
     return (
         <div className="max-w-6xl mx-auto py-4 space-y-10 animate-in fade-in duration-700">
             <Link
@@ -62,6 +67,14 @@ export function WorkflowDetailContent({ workflow, author }: WorkflowDetailConten
                         <Button size="lg" variant="text" className="rounded-xl gap-3 px-6 h-14 font-black uppercase tracking-widest text-muted-foreground hover:text-primary">
                             <ExternalLink className="w-5 h-5" /> View Source
                         </Button>
+
+                        {isOwner && (
+                            <Link href={`${ROUTES.WORKFLOW_DETAIL(workflow.slug)}/edit`}>
+                                <Button size="lg" variant="flat" className="rounded-xl gap-3 px-8 h-14 font-black uppercase tracking-widest bg-amber-500/10 text-amber-500 hover:bg-amber-500/20 shadow-xl shadow-amber-500/5 transition-all hover:scale-105">
+                                    <Settings className="w-5 h-5" /> Edit Workflow
+                                </Button>
+                            </Link>
+                        )}
                     </div>
 
                     <section className="space-y-6">

@@ -9,13 +9,12 @@ import { EmptyState } from '@/components/ui/EmptyState';
 import { Workflow, Node } from '@/data/mock';
 
 interface NodeDetailContentProps {
-    nodeId: string;
     node?: Node;
     nodeName: string;
     workflows: Workflow[];
 }
 
-export function NodeDetailContent({ nodeId, node, nodeName, workflows }: NodeDetailContentProps) {
+export function NodeDetailContent({ node, nodeName, workflows }: NodeDetailContentProps) {
     return (
         <div className="space-y-12 py-4 animate-in fade-in duration-700">
             <Link
