@@ -1,14 +1,18 @@
+/**
+ * Ultra-fast parallel importer using local JSON file.
+ * Runs with 1000 concurrent requests for maximum speed.
+ */
 
 import { db } from '@/db';
 import { workflows, tags, workflowTags, nodes, workflowNodes } from '@/db/schema';
-import { eq } from 'drizzle-orm';
 import { slugify } from '@/utils/slug';
 import { computeWorkflowHash } from '../github/dedupe';
 import pLimit from 'p-limit';
+import { readFileSync } from 'fs';
 
-const META_URL = 'https://n8n-templates.ritiktechs.com/template-meta.json';
+const LOCAL_META_FILE = './2000.json';
 const BASE_URL = 'https://n8n-templates.ritiktechs.com/';
-const CONCURRENCY = 5000; // Number of parallel requests
+const CONCURRENCY = 1000; // Maximum parallel requests
 
 interface RitikWorkflow {
     id: number;
@@ -22,13 +26,6 @@ interface RitikWorkflow {
     nodeCount: number;
     preview: string;
     relativePath: string;
-}
-
-async function fetchMetadata(): Promise<RitikWorkflow[]> {
-    console.log(`🔍 Fetching metadata from ${META_URL}...`);
-    const res = await fetch(META_URL);
-    if (!res.ok) throw new Error(`Failed to fetch metadata: ${res.statusText}`);
-    return await res.json();
 }
 
 async function fetchWorkflowJson(url: string): Promise<string | null> {
@@ -91,6 +88,7 @@ async function processWorkflow(w: RitikWorkflow, existingHashes: Set<string>): P
         try {
             const workflowData = JSON.parse(jsonContent);
             const nodesList = workflowData.nodes || [];
+            // eslint-disable-next-line @typescript-eslint/no-explicit-any
             const distinctNodes = new Set(nodesList.map((n: any) => n.type?.replace('n8n-nodes-base.', '') || 'unknown'));
 
             for (const nodeName of distinctNodes as Set<string>) {
@@ -109,10 +107,13 @@ async function processWorkflow(w: RitikWorkflow, existingHashes: Set<string>): P
 }
 
 async function main() {
-    console.log('🚀 Starting PARALLEL RitikTechs Importer...');
+    console.log('🚀 Starting TURBO RitikTechs Importer...');
     console.log(`⚡ Concurrency: ${CONCURRENCY} parallel requests`);
+    console.log(`📂 Reading local metadata from: ${LOCAL_META_FILE}`);
 
-    const workflowsList = await fetchMetadata();
+    // Read from local file
+    const rawData = readFileSync(LOCAL_META_FILE, 'utf-8');
+    const workflowsList: RitikWorkflow[] = JSON.parse(rawData);
     console.log(`📦 Found ${workflowsList.length} workflows to process.`);
 
     // Pre-fetch existing hashes for deduplication
@@ -138,15 +139,18 @@ async function main() {
             if (result.skipped) skippedCount++;
             if (result.error) errorCount++;
 
-            if (processed % 100 === 0) {
+            if (processed % 500 === 0) {
                 console.log(`📊 Progress: ${processed}/${workflowsList.length} | ✅ ${successCount} | ⏭️ ${skippedCount} | ❌ ${errorCount}`);
             }
         })
     );
 
+    const startTime = Date.now();
     await Promise.all(tasks);
+    const elapsed = (Date.now() - startTime) / 1000;
 
     console.log('\n✨ Import Complete!');
+    console.log(`⏱️ Time: ${elapsed.toFixed(1)}s`);
     console.log(`📊 Final: Imported: ${successCount} | Skipped: ${skippedCount} | Errors: ${errorCount}`);
 }
 

@@ -13,12 +13,31 @@ import {
     Globe,
     ShieldCheck,
     Github,
+    Check,
     Settings
 } from 'lucide-react';
 import Link from 'next/link';
 import { ROUTES } from '@/constants/routes';
 import { Workflow, Author } from '@/data/mock';
 import { useUser } from '@stackframe/stack';
+import { useState } from 'react';
+
+function CopyButton({ json }: { json: string }) {
+    const [copied, setCopied] = useState(false);
+
+    const handleCopy = () => {
+        navigator.clipboard.writeText(json);
+        setCopied(true);
+        setTimeout(() => setCopied(false), 2000);
+    };
+
+    return (
+        <Button size="lg" variant="outline" className="rounded-xl gap-3 px-8 h-14 font-black uppercase tracking-widest border-muted/50 hover:border-primary/50 transition-all" onClick={handleCopy}>
+            {copied ? <Check className="w-5 h-5 text-emerald-500" /> : <FileCode className="w-5 h-5" />}
+            {copied ? "Copied!" : "Copy JSON"}
+        </Button>
+    );
+}
 
 interface WorkflowDetailContentProps {
     workflow: Workflow;
@@ -56,15 +75,25 @@ export function WorkflowDetailContent({ workflow, author }: WorkflowDetailConten
                     </div>
 
                     <div className="flex flex-wrap items-center gap-4 py-8 border-y border-muted/50">
-                        <Button size="lg" className="rounded-xl gap-3 px-8 h-14 font-black uppercase tracking-widest shadow-xl shadow-primary/20 transition-transform hover:scale-105">
+                        <Button size="lg" className="rounded-xl gap-3 px-8 h-14 font-black uppercase tracking-widest shadow-xl shadow-primary/20 transition-transform hover:scale-105" onClick={() => {
+                            const blob = new Blob([workflow.json], { type: 'application/json' });
+                            const url = URL.createObjectURL(blob);
+                            const a = document.createElement('a');
+                            a.href = url;
+                            a.download = `${workflow.slug}.json`;
+                            document.body.appendChild(a);
+                            a.click();
+                            document.body.removeChild(a);
+                            URL.revokeObjectURL(url);
+                        }}>
                             <Download className="w-5 h-5" /> Download JSON
                         </Button>
-                        <Button size="lg" variant="outline" className="rounded-xl gap-3 px-8 h-14 font-black uppercase tracking-widest border-muted/50 hover:border-primary/50 transition-all" onClick={() => {
-                            navigator.clipboard.writeText(workflow.json);
+                        <CopyButton json={workflow.json} />
+                        <Button size="lg" variant="text" className="rounded-xl gap-3 px-6 h-14 font-black uppercase tracking-widest text-muted-foreground hover:text-primary" onClick={() => {
+                            const blob = new Blob([workflow.json], { type: 'application/json' });
+                            const url = URL.createObjectURL(blob);
+                            window.open(url, '_blank');
                         }}>
-                            <FileCode className="w-5 h-5" /> Copy JSON
-                        </Button>
-                        <Button size="lg" variant="text" className="rounded-xl gap-3 px-6 h-14 font-black uppercase tracking-widest text-muted-foreground hover:text-primary">
                             <ExternalLink className="w-5 h-5" /> View Source
                         </Button>
 
