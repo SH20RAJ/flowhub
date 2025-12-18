@@ -73,11 +73,16 @@ export const metadata: Metadata = {
 	manifest: "/manifest.json",
 };
 
-export default function RootLayout({
+import { getCurrentUser } from '@/lib/current-user';
+
+export default async function RootLayout({
 	children,
 }: Readonly<{
 	children: React.ReactNode;
 }>) {
+	// Sync user with database if logged in
+	await getCurrentUser();
+
 	return (
 		<html lang="en" suppressHydrationWarning>
 			<body className={`${inter.className} antialiased font-sans`}>

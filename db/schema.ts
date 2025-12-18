@@ -54,3 +54,12 @@ export const workflowNodes = sqliteTable('workflow_nodes', {
 }, (t) => ({
     pk: primaryKey({ columns: [t.workflowId, t.nodeId] }),
 }));
+
+export const sources = sqliteTable('sources', {
+    id: text('id').primaryKey(),
+    url: text('url').unique().notNull(),
+    name: text('name').notNull(),
+    owner: text('owner').notNull(),
+    repo: text('repo').notNull(),
+    lastSyncedAt: text('last_synced_at').default(sql`CURRENT_TIMESTAMP`),
+});

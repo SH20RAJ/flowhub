@@ -10,5 +10,5 @@ export const ROUTES = {
     AUTHOR_PROFILE: (username: string) => `/authors/${username}`,
     SUBMIT: '/submit',
     ABOUT: '/about',
-    GITHUB_REPO: 'https://github.com/n8n-io/n8n',
+    GITHUB_REPO: 'https://github.com/sh20RAJ/flowhub',
 } as const;
