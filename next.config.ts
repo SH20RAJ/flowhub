@@ -9,6 +9,7 @@ const withPWA = withPWAInit({
 
 const nextConfig: NextConfig = {
 	/* config options here */
+	serverExternalPackages: ["@libsql/client", "@libsql/hrana-client", "@libsql/isomorphic-ws"],
 };
 
 export default withPWA(nextConfig);
