@@ -7,11 +7,48 @@ import {
     ArrowRight,
     ShieldCheck,
     Zap,
-    CheckCircle2
+    CheckCircle2,
+    Lock
 } from 'lucide-react';
 import { DIFFICULTY_OPTIONS } from '@/constants/enums';
+import { useUser, useStackApp } from '@stackframe/stack';
+import { LoadingSkeleton } from '@/components/ui/LoadingSkeleton';
 
 export default function SubmitPage() {
+    const user = useUser();
+    const app = useStackApp();
+
+    if (user === undefined) {
+        return (
+            <div className="max-w-4xl mx-auto py-32 flex flex-col items-center gap-6">
+                <LoadingSkeleton className="h-64 rounded-[2.5rem]" />
+            </div>
+        );
+    }
+
+    if (!user) {
+        return (
+            <div className="max-w-xl mx-auto py-32 text-center space-y-8 animate-in fade-in slide-in-from-bottom-8 duration-700">
+                <div className="w-20 h-20 rounded-3xl bg-primary/10 flex items-center justify-center mx-auto text-primary">
+                    <Lock className="w-10 h-10" />
+                </div>
+                <div className="space-y-3">
+                    <Title as="h1" className="text-3xl font-black uppercase tracking-tight">Authentication Required</Title>
+                    <Text className="text-muted-foreground font-medium text-lg">
+                        You need to be signed in to contribute workflows to the community gallery.
+                    </Text>
+                </div>
+                <Button
+                    size="lg"
+                    className="rounded-2xl px-12 h-14 font-black uppercase tracking-widest shadow-xl shadow-primary/20 hover:scale-105 transition-transform"
+                    onClick={() => app.urls.signIn.open()}
+                >
+                    Sign In to Continue
+                </Button>
+            </div>
+        );
+    }
+
     return (
         <div className="max-w-4xl mx-auto py-8 space-y-12 animate-in fade-in duration-700">
             <div className="space-y-4 max-w-2xl">
@@ -116,7 +153,7 @@ export default function SubmitPage() {
                             <div className="p-4 rounded-2xl bg-white/5 border border-primary/20 space-y-3">
                                 <div className="flex items-center gap-3">
                                     <CheckCircle2 className="w-5 h-5 text-primary" />
-                                    <span className="text-xs font-bold">Frontend Ready</span>
+                                    <span className="text-xs font-bold">Authenticated as {user.primaryEmail}</span>
                                 </div>
                                 <div className="flex items-center gap-3 opacity-50">
                                     <div className="w-5 h-5 rounded-full border-2 border-primary/30 flex items-center justify-center">

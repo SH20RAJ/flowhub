@@ -7,6 +7,7 @@ import { Github, Menu } from 'lucide-react';
 import { ActionIcon } from 'rizzui';
 import { SearchBar } from '@/components/workflows/SearchBar';
 import { ROUTES } from '@/constants/routes';
+import { UserButton } from '@stackframe/stack';
 
 export function Navbar({ onMenuClick }: { onMenuClick: () => void }) {
     const [search, setSearch] = useState('');
@@ -67,6 +68,11 @@ export function Navbar({ onMenuClick }: { onMenuClick: () => void }) {
                         </ActionIcon>
                     </Link>
                     <ThemeToggle />
+
+                    {/* Stack Auth User Button */}
+                    <div className="ml-2 border-l pl-4 border-muted/50 h-8 flex items-center">
+                        <UserButton />
+                    </div>
                 </div>
             </div>
         </header>

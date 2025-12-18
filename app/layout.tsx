@@ -1,4 +1,6 @@
 import type { Metadata } from "next";
+import { StackProvider, StackTheme } from "@stackframe/stack";
+import { stackClientApp } from "../stack/client";
 import { Inter } from "next/font/google";
 import "./globals.css";
 import { ThemeProvider } from "@/components/layout/ThemeProvider";
@@ -21,7 +23,7 @@ export default function RootLayout({
 			<head>
 				<link rel="icon" href="/favicon.svg" type="image/svg+xml"></link>
 			</head>
-			<body className={`${inter.className} antialiased`}>
+			<body className={`${inter.className} antialiased`}><StackProvider app={stackClientApp}><StackTheme>
 				<ThemeProvider
 					attribute="class"
 					defaultTheme="dark"
@@ -32,7 +34,7 @@ export default function RootLayout({
 						{children}
 					</AppShell>
 				</ThemeProvider>
-			</body>
+			</StackTheme></StackProvider></body>
 		</html>
 	);
 }

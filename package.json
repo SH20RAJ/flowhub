@@ -14,6 +14,7 @@
 	},
 	"dependencies": {
 		"@opennextjs/cloudflare": "^1.14.4",
+		"@stackframe/stack": "^2.8.56",
 		"@tailwindcss/postcss": "^4.1.18",
 		"clsx": "^2.1.1",
 		"lucide-react": "^0.561.0",
