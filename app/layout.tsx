@@ -1,5 +1,5 @@
 import type { Metadata, Viewport } from "next";
-import { StackProvider, StackTheme } from "@stackframe/stack";
+import { StackAuthProvider } from "@/components/providers/StackAuthProvider";
 import { stackClientApp } from "../stack/client";
 import { Inter } from "next/font/google";
 import "./globals.css";
@@ -81,20 +81,18 @@ export default function RootLayout({
 	return (
 		<html lang="en" suppressHydrationWarning>
 			<body className={`${inter.className} antialiased font-sans`}>
-				<StackProvider app={stackClientApp}>
-					<StackTheme>
-						<ThemeProvider
-							attribute="class"
-							defaultTheme="dark"
-							enableSystem
-							disableTransitionOnChange
-						>
-							<AppShell>
-								{children}
-							</AppShell>
-						</ThemeProvider>
-					</StackTheme>
-				</StackProvider>
+				<StackAuthProvider>
+					<ThemeProvider
+						attribute="class"
+						defaultTheme="dark"
+						enableSystem
+						disableTransitionOnChange
+					>
+						<AppShell>
+							{children}
+						</AppShell>
+					</ThemeProvider>
+				</StackAuthProvider>
 			</body>
 		</html>
 	);

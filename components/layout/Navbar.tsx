@@ -1,7 +1,7 @@
 'use client';
 
 import Link from 'next/link';
-import { useState } from 'react';
+import { useState, useEffect } from 'react';
 import { ThemeToggle } from './ThemeToggle';
 import { Github, Menu } from 'lucide-react';
 import { ActionIcon } from 'rizzui';
@@ -11,6 +11,12 @@ import { UserButton } from '@stackframe/stack';
 
 export function Navbar({ onMenuClick }: { onMenuClick: () => void }) {
     const [search, setSearch] = useState('');
+    const [mounted, setMounted] = useState(false);
+
+    // Prevent hydration mismatch and SSG errors by only rendering auth/theme components on client
+    useEffect(() => {
+        setMounted(true);
+    }, []);
 
     const handleSearch = (val: string) => {
         setSearch(val);
@@ -67,12 +73,15 @@ export function Navbar({ onMenuClick }: { onMenuClick: () => void }) {
                             <Github className="w-5 h-5" />
                         </ActionIcon>
                     </Link>
-                    <ThemeToggle />
-
-                    {/* Stack Auth User Button */}
-                    <div className="ml-2 border-l pl-4 border-muted/50 h-8 flex items-center">
-                        <UserButton />
-                    </div>
+                    {mounted && (
+                        <>
+                            <ThemeToggle />
+                            {/* Stack Auth User Button */}
+                            <div className="ml-2 border-l pl-4 border-muted/50 h-8 flex items-center">
+                                <UserButton />
+                            </div>
+                        </>
+                    )}
                 </div>
             </div>
         </header>

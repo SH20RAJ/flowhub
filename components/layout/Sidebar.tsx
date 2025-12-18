@@ -35,10 +35,21 @@ const authNavigation = [
 ];
 
 export function Sidebar({ isOpen, setIsOpen }: { isOpen: boolean, setIsOpen: (val: boolean) => void }) {
+    const [mounted, setMounted] = useState(false);
+
+    useEffect(() => {
+        setMounted(true);
+    }, []);
+
+    if (!mounted) return null;
+
+    return <SidebarContent isOpen={isOpen} setIsOpen={setIsOpen} />;
+}
+
+function SidebarContent({ isOpen, setIsOpen }: { isOpen: boolean, setIsOpen: (val: boolean) => void }) {
     const pathname = usePathname();
     const user = useUser();
     const [collapsed, setCollapsed] = useState(false);
-    const [mounted, setMounted] = useState(false);
 
     // Load persistence state from localStorage
     useEffect(() => {
@@ -46,7 +57,6 @@ export function Sidebar({ isOpen, setIsOpen }: { isOpen: boolean, setIsOpen: (va
         if (saved !== null) {
             setCollapsed(saved === 'true');
         }
-        setMounted(true);
     }, []);
 
     // Save persistence state to localStorage
@@ -55,8 +65,6 @@ export function Sidebar({ isOpen, setIsOpen }: { isOpen: boolean, setIsOpen: (va
         setCollapsed(newState);
         localStorage.setItem('sidebar-collapsed', String(newState));
     };
-
-    if (!mounted) return null;
 
     const navItems = user ? [...navigation, ...authNavigation] : [...navigation, { name: 'Submit Workflow', href: ROUTES.SUBMIT, icon: PlusCircle }];
 

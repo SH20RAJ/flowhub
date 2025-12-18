@@ -32,5 +32,5 @@ export default async function Page({ params }: Props) {
 
     const nodeName = node?.name || nodeId.split('-').map(s => s.charAt(0).toUpperCase() + s.slice(1)).join(' ');
 
-    return <NodeDetailContent nodeId={nodeId} node={node} nodeName={nodeName} workflows={filteredWorkflows} />;
+    return <NodeDetailContent node={node} nodeName={nodeName} workflows={filteredWorkflows} />;
 }
