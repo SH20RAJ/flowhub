@@ -122,12 +122,12 @@ export default function WorkflowsPage() {
                                 {filteredWorkflows.map((workflow) => (
                                     <WorkflowCard
                                         key={workflow.id}
-                                        workflow={workflow as any}
+                                        workflow={workflow}
                                     />
                                 ))}
                             </div>
                         ) : (
-                            <WorkflowTable workflows={filteredWorkflows as any} />
+                            <WorkflowTable workflows={filteredWorkflows} />
                         )}
                     </div>
                 ) : (

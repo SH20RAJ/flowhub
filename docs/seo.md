@@ -22,6 +22,7 @@ Here is a **comprehensive Cursor prompt** you can use to build **SEO, PWA, perfo
   * robots index rules
 * Provide structured metadata for dynamic pages (eg: workflows, tags).
 * Use dynamic metadata generation (`generateMetadata`) where content is dynamic.
+* Never make a page.tsx or layout.tsx file without metadata.
 
 **Goal:** crawler-friendly HTML with rich previews and unique, relevant metadata per page. ([Medium][2])
 

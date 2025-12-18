@@ -50,7 +50,7 @@ export function WorkflowCard({ workflow, className }: WorkflowCardProps) {
 
                 <div className="flex flex-wrap gap-1.5 mt-2">
                     {workflow.tags.slice(0, 3).map((tag) => (
-                        <TagBadge key={tag} tag={tag} variant="secondary" />
+                        <TagBadge key={tag} tag={tag} variant="flat" />
                     ))}
                 </div>
             </div>
