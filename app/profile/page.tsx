@@ -2,6 +2,13 @@ import { getCurrentUser } from '@/lib/current-user';
 import { Title, Text, Avatar, Button, Input, Textarea } from 'rizzui';
 import { notFound } from 'next/navigation';
 import { ShieldCheck } from 'lucide-react';
+import { Metadata } from 'next';
+
+export const metadata: Metadata = {
+    title: "My Settings",
+    description: "Manage your Flowhub profile and account preferences.",
+    robots: { index: false, follow: false },
+};
 
 export default async function ProfilePage() {
     const user = await getCurrentUser();

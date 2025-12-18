@@ -7,6 +7,15 @@ import { WorkflowCard } from '@/components/workflows/WorkflowCard';
 import { notFound } from 'next/navigation';
 import { EmptyState } from '@/components/ui/EmptyState';
 import { ROUTES } from '@/constants/routes';
+import { Metadata } from 'next';
+import { Difficulty, Source } from '@/constants/enums';
+import { Workflow } from '@/data/mock';
+
+export const metadata: Metadata = {
+    title: "My Workflows",
+    description: "Manage and view your contributed n8n workflows.",
+    robots: { index: false, follow: false },
+};
 
 export default async function MyWorkflowsPage() {
     const user = await getCurrentUser();
@@ -39,15 +48,16 @@ export default async function MyWorkflowsPage() {
                             key={workflow.id}
                             workflow={{
                                 ...workflow,
-                                difficulty: (workflow.difficulty as any) || 'Beginner',
-                                source: (workflow.sourceType as any) || 'Community',
+                                difficulty: (workflow.difficulty as Difficulty) || Difficulty.Beginner,
+                                source: (workflow.sourceType as Source) || Source.Community,
                                 tags: [],
                                 nodes: [],
                                 license: workflow.license || 'MIT',
                                 description: workflow.description || '',
                                 createdAt: workflow.createdAt || new Date().toISOString(),
                                 updatedAt: workflow.updatedAt || new Date().toISOString(),
-                            } as any}
+                                authorId: workflow.authorId || '',
+                            } as Workflow}
                         />
                     ))}
                 </div>
