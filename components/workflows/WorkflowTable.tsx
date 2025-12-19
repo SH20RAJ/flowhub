@@ -1,6 +1,5 @@
 'use client';
 
-import { Table } from 'rizzui';
 import Link from 'next/link';
 import { TagBadge } from '@/components/ui/TagBadge';
 import { cn } from '@/lib/utils';
@@ -28,24 +27,24 @@ const difficultyStyles: Record<Difficulty, string> = {
 
 export function WorkflowTable({ workflows, className }: WorkflowTableProps) {
     return (
-        <div className={cn("overflow-x-auto rounded-xl border bg-card/30 backdrop-blur-sm", className)}>
-            <Table className="min-w-full">
-                <Table.Header className="bg-muted/30">
-                    <Table.Row>
-                        <Table.Head className="py-4 px-6 text-left font-bold text-xs uppercase tracking-wider">Workflow</Table.Head>
-                        <Table.Head className="py-4 px-6 text-left font-bold text-xs uppercase tracking-wider">Difficulty</Table.Head>
-                        <Table.Head className="py-4 px-6 text-left font-bold text-xs uppercase tracking-wider">Tags</Table.Head>
-                        <Table.Head className="py-4 px-6 text-right font-bold text-xs uppercase tracking-wider whitespace-nowrap">Last Updated</Table.Head>
-                    </Table.Row>
-                </Table.Header>
-                <Table.Body>
+        <div className={cn("overflow-x-auto rounded-xl border border-muted/30 bg-card/30 backdrop-blur-sm", className)}>
+            <table className="min-w-full divide-y divide-muted/30">
+                <thead className="bg-muted/30">
+                    <tr>
+                        <th className="py-4 px-6 text-left font-bold text-xs uppercase tracking-wider text-muted-foreground">Workflow</th>
+                        <th className="py-4 px-6 text-left font-bold text-xs uppercase tracking-wider text-muted-foreground">Difficulty</th>
+                        <th className="py-4 px-6 text-left font-bold text-xs uppercase tracking-wider text-muted-foreground">Tags</th>
+                        <th className="py-4 px-6 text-right font-bold text-xs uppercase tracking-wider text-muted-foreground whitespace-nowrap">Last Updated</th>
+                    </tr>
+                </thead>
+                <tbody className="divide-y divide-muted/30">
                     {workflows.map((workflow) => (
-                        <Table.Row key={workflow.id} className="hover:bg-muted/20 transition-colors border-b last:border-0 border-muted/50">
-                            <Table.Cell className="py-4 px-6">
+                        <tr key={workflow.id} className="hover:bg-muted/20 transition-colors">
+                            <td className="py-4 px-6">
                                 <div className="flex flex-col gap-0.5">
                                     <Link
                                         href={ROUTES.WORKFLOW_DETAIL(workflow.slug)}
-                                        className="font-bold text-sm hover:text-primary transition-colors"
+                                        className="font-bold text-sm text-foreground hover:text-primary transition-colors"
                                     >
                                         {workflow.title}
                                     </Link>
@@ -53,13 +52,13 @@ export function WorkflowTable({ workflows, className }: WorkflowTableProps) {
                                         {workflow.source}
                                     </span>
                                 </div>
-                            </Table.Cell>
-                            <Table.Cell className="py-4 px-6">
+                            </td>
+                            <td className="py-4 px-6">
                                 <span className={cn("text-[10px] font-black uppercase tracking-widest", difficultyStyles[workflow.difficulty])}>
                                     {workflow.difficulty}
                                 </span>
-                            </Table.Cell>
-                            <Table.Cell className="py-4 px-6">
+                            </td>
+                            <td className="py-4 px-6">
                                 <div className="flex flex-wrap gap-1.5 items-center">
                                     {workflow.tags.slice(0, 3).map((tag) => (
                                         <TagBadge key={tag} tag={tag} variant="outline" className="border-none bg-muted/30" />
@@ -68,18 +67,18 @@ export function WorkflowTable({ workflows, className }: WorkflowTableProps) {
                                         <span className="text-[10px] font-bold text-muted-foreground/50">+{workflow.tags.length - 3}</span>
                                     )}
                                 </div>
-                            </Table.Cell>
-                            <Table.Cell className="py-4 px-6 text-[10px] text-muted-foreground text-right font-mono uppercase font-bold opacity-80">
+                            </td>
+                            <td className="py-4 px-6 text-[10px] text-muted-foreground text-right font-mono uppercase font-bold opacity-80">
                                 {new Date(workflow.updatedAt).toLocaleDateString(undefined, {
                                     month: 'short',
                                     day: 'numeric',
                                     year: 'numeric'
                                 })}
-                            </Table.Cell>
-                        </Table.Row>
+                            </td>
+                        </tr>
                     ))}
-                </Table.Body>
-            </Table>
+                </tbody>
+            </table>
         </div>
     );
 }

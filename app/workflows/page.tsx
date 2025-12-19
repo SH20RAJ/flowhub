@@ -1,10 +1,11 @@
 import { WorkflowsContent } from './WorkflowsContent';
 import { Metadata } from 'next';
 import { db } from '@/db';
+import { workflows as workflowsSchema } from '@/db/schema';
 import { Workflow } from '@/data/mock';
 
 export const metadata: Metadata = {
-    title: "Workflow Library",
+    title: "Workflow Library | Flowhub",
     description: "Browse through hundreds of production-ready n8n automations. Filter by difficulty, tool, and industry.",
     openGraph: {
         title: "Workflow Library | Flowhub",
@@ -13,6 +14,8 @@ export const metadata: Metadata = {
 };
 
 export default async function WorkflowsPage() {
+    // 1. Fetch workflows from database with relations
+    // We order by createdAt descending to show newest first
     const workflowsData = await db.query.workflows.findMany({
         orderBy: (workflows, { desc }) => [desc(workflows.createdAt)],
         with: {
@@ -30,28 +33,45 @@ export default async function WorkflowsPage() {
         }
     });
 
-    // Map DB result to Mock interfaces
-    const workflows: Workflow[] = workflowsData.map(w => ({
-        id: w.id,
-        title: w.title,
-        description: w.description || '',
-        slug: w.slug,
-        json: w.json,
-        // eslint-disable-next-line @typescript-eslint/no-explicit-any
-        difficulty: (w.difficulty as any) || 'Beginner',
-        // eslint-disable-next-line @typescript-eslint/no-explicit-any
-        source: (w.sourceType as any) || 'community',
-        authorId: w.authorId || '',
-        createdAt: w.createdAt || new Date().toISOString(),
-        updatedAt: w.updatedAt || new Date().toISOString(),
-        downloads: 0,
-        views: 0,
-        tags: w.tags.map(t => t.tag.name),
-        nodes: w.nodes.map(n => n.node.name),
-        license: w.license || 'MIT',
-    }));
+    // 2. Map DB results to the Workflow interface expected by the UI components
+    // CRITICAL: We explicitly set 'json' to an empty string here to keep the RSC payload small.
+    // The full JSON is only needed on the individual workflow detail page.
+    const mappedWorkflows: Workflow[] = workflowsData.map(w => {
+        try {
+            return {
+                id: w.id,
+                title: w.title,
+                description: w.description || '',
+                slug: w.slug,
+                json: '', // Excluded for performance in list view
+                // Map DB difficulty to expected enum or default to Beginner
+                difficulty: (w.difficulty as any) || 'Beginner',
+                // Map sourceType to source as expected by the Mock interface
+                source: (w.sourceType as any) || 'community',
+                authorId: w.authorId || '',
+                createdAt: w.createdAt || new Date().toISOString(),
+                updatedAt: w.updatedAt || new Date().toISOString(),
+                // Extra metadata expected by some components
+                downloads: 0,
+                views: 0,
+                // Extract tag names and filter out any potential nulls
+                tags: (w.tags || [])
+                    .map(t => t.tag?.name)
+                    .filter((name): name is string => !!name),
+                // Extract node names and filter out any potential nulls
+                nodes: (w.nodes || [])
+                    .map(n => n.node?.name)
+                    .filter((name): name is string => !!name),
+                license: w.license || 'MIT',
+            };
+        } catch (error) {
+            console.error(`Failed to map workflow with ID ${w.id}:`, error);
+            return null;
+        }
+    }).filter((w): w is Workflow => w !== null);
 
+    // 3. Render the client component with the optimized data list
     return (
-        <WorkflowsContent workflows={workflows} />
+        <WorkflowsContent workflows={mappedWorkflows} />
     );
 }

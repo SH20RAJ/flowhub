@@ -2,8 +2,7 @@
 
 import { useState, useMemo } from 'react';
 import { Workflow } from '@/data/mock';
-import { Title, Text, ActionIcon, Button } from 'rizzui';
-import { LayoutGrid, List, SlidersHorizontal } from 'lucide-react';
+import { LayoutGrid, List, SlidersHorizontal, Search, X, ChevronDown, ChevronRight } from 'lucide-react';
 import { WorkflowCard } from '@/components/workflows/WorkflowCard';
 import { WorkflowTable } from '@/components/workflows/WorkflowTable';
 import { SearchBar } from '@/components/workflows/SearchBar';
@@ -45,49 +44,46 @@ export function WorkflowsContent({ workflows }: WorkflowsContentProps) {
     return (
         <div className="space-y-10 animate-in fade-in duration-500">
             {/* Header & View Toggles */}
-            <div className="flex flex-col gap-6 md:flex-row md:items-end md:justify-between border-b pb-8">
+            <div className="flex flex-col gap-6 md:flex-row md:items-end md:justify-between border-b pb-8 border-muted/30">
                 <div className="space-y-2">
-                    <Title as="h1" className="text-4xl font-black tracking-tight">
+                    <h1 className="text-4xl font-black tracking-tight text-foreground">
                         Workflows
-                    </Title>
-                    <Text className="text-muted-foreground font-medium">
+                    </h1>
+                    <p className="text-muted-foreground font-medium">
                         Browse through {workflows.length} production-ready automations.
-                    </Text>
+                    </p>
                 </div>
 
                 <div className="flex items-center gap-3">
-                    <div className="inline-flex rounded-xl border bg-muted/20 p-1.5 backdrop-blur-sm">
-                        <ActionIcon
-                            variant={view === 'grid' ? 'flat' : 'text'}
+                    <div className="inline-flex rounded-xl border border-muted/30 bg-muted/20 p-1.5 backdrop-blur-sm">
+                        <button
                             onClick={() => setView('grid')}
                             className={cn(
-                                "w-9 h-9 rounded-lg transition-all",
-                                view === 'grid' ? "bg-background shadow-sm text-primary" : "text-muted-foreground hover:text-foreground"
+                                "flex items-center justify-center w-9 h-9 rounded-lg transition-all",
+                                view === 'grid' ? "bg-background shadow-sm text-primary" : "text-muted-foreground hover:text-foreground hover:bg-muted/30"
                             )}
                             title="Grid View"
                             aria-label="Grid View"
                         >
                             <LayoutGrid className="w-4 h-4" />
-                        </ActionIcon>
-                        <ActionIcon
-                            variant={view === 'table' ? 'flat' : 'text'}
+                        </button>
+                        <button
                             onClick={() => setView('table')}
                             className={cn(
-                                "w-9 h-9 rounded-lg transition-all",
-                                view === 'table' ? "bg-background shadow-sm text-primary" : "text-muted-foreground hover:text-foreground"
+                                "flex items-center justify-center w-9 h-9 rounded-lg transition-all",
+                                view === 'table' ? "bg-background shadow-sm text-primary" : "text-muted-foreground hover:text-foreground hover:bg-muted/30"
                             )}
                             title="Table View"
                             aria-label="Table View"
                         >
                             <List className="w-4 h-4" />
-                        </ActionIcon>
+                        </button>
                     </div>
 
-                    <Button
-                        variant="outline"
+                    <button
                         onClick={() => setShowFilters(!showFilters)}
                         className={cn(
-                            "gap-2.5 h-12 px-5 rounded-xl border-muted/50 font-bold transition-all",
+                            "flex items-center gap-2.5 h-12 px-5 rounded-xl border border-muted/50 font-bold transition-all hover:bg-muted/30",
                             showFilters && "text-primary border-primary bg-primary/5 ring-4 ring-primary/5"
                         )}
                         aria-expanded={showFilters}
@@ -97,7 +93,7 @@ export function WorkflowsContent({ workflows }: WorkflowsContentProps) {
                         {(difficulty !== 'all' || source !== 'all') && (
                             <span className="w-2 h-2 rounded-full bg-primary animate-pulse" />
                         )}
-                    </Button>
+                    </button>
                 </div>
             </div>
 
@@ -139,19 +135,18 @@ export function WorkflowsContent({ workflows }: WorkflowsContentProps) {
                         <div className="p-4 rounded-full bg-muted/50 mb-6">
                             <SlidersHorizontal className="w-10 h-10 text-muted-foreground opacity-30" />
                         </div>
-                        <Title as="h3" className="text-xl font-black uppercase tracking-widest text-muted-foreground/80">
+                        <h3 className="text-xl font-black uppercase tracking-widest text-muted-foreground/80">
                             No workflows found
-                        </Title>
-                        <Text className="text-muted-foreground font-medium mt-2">
+                        </h3>
+                        <p className="text-muted-foreground font-medium mt-2">
                             Try adjusting your search criteria or clear all filters.
-                        </Text>
-                        <Button
-                            variant="flat"
-                            className="mt-8 rounded-xl px-8 h-11 font-bold"
+                        </p>
+                        <button
+                            className="mt-8 rounded-xl px-8 h-11 font-bold bg-muted/20 hover:bg-muted/40 transition-colors text-foreground"
                             onClick={clearFilters}
                         >
                             Reset All Filters
-                        </Button>
+                        </button>
                     </div>
                 )}
             </div>

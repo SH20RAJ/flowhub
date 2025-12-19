@@ -1,7 +1,6 @@
 'use client';
 
 import Link from 'next/link';
-import { Title, Text } from 'rizzui';
 import { TagBadge } from '@/components/ui/TagBadge';
 import { NodeBadge } from '@/components/ui/NodeBadge';
 import { Calendar, User } from 'lucide-react';
@@ -32,9 +31,9 @@ export function WorkflowCard({ workflow, className }: WorkflowCardProps) {
                         href={ROUTES.WORKFLOW_DETAIL(workflow.slug)}
                         className="group/title"
                     >
-                        <Title as="h3" className="text-xl font-black tracking-tight group-hover/title:text-primary transition-colors line-clamp-2 leading-tight">
+                        <h3 className="text-xl font-black tracking-tight group-hover/title:text-primary transition-colors line-clamp-2 leading-tight text-foreground">
                             {workflow.title}
-                        </Title>
+                        </h3>
                     </Link>
                     <div className={cn(
                         "text-[9px] font-black uppercase tracking-[0.2em] px-2.5 py-1 rounded-md bg-muted/50 whitespace-nowrap",
@@ -44,9 +43,9 @@ export function WorkflowCard({ workflow, className }: WorkflowCardProps) {
                     </div>
                 </div>
 
-                <Text className="text-muted-foreground/80 font-medium text-sm line-clamp-2 leading-relaxed h-[3rem]">
+                <p className="text-muted-foreground/80 font-medium text-sm line-clamp-2 leading-relaxed h-[3rem]">
                     {workflow.description}
-                </Text>
+                </p>
 
                 <div className="flex flex-wrap gap-1.5 mt-2">
                     {workflow.tags.slice(0, 3).map((tag) => (

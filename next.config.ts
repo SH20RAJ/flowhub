@@ -10,6 +10,7 @@ const withPWA = withPWAInit({
 const nextConfig: NextConfig = {
 	/* config options here */
 	serverExternalPackages: ["@libsql/client", "@libsql/hrana-client", "@libsql/isomorphic-ws"],
+	transpilePackages: ["@stackframe/stack"],
 };
 
 export default withPWA(nextConfig);

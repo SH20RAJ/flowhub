@@ -1,7 +1,6 @@
 'use client';
 
-import { Select, Text, Button } from 'rizzui';
-import { X } from 'lucide-react';
+import { X, ChevronDown } from 'lucide-react';
 import { cn } from '@/lib/utils';
 import { DIFFICULTY_OPTIONS, SOURCE_OPTIONS } from '@/constants/enums';
 
@@ -24,46 +23,57 @@ export function FilterPanel({
 }: FilterPanelProps) {
     return (
         <div className={cn(
-            "grid grid-cols-1 md:grid-cols-3 gap-6 p-6 border rounded-2xl bg-muted/10 backdrop-blur-sm animate-in fade-in slide-in-from-top-4 duration-300",
+            "grid grid-cols-1 md:grid-cols-3 gap-6 p-6 border border-border/40 rounded-2xl bg-muted/10 backdrop-blur-sm animate-in fade-in slide-in-from-top-4 duration-300",
             className
         )}>
             <div className="space-y-2">
-                <Text className="text-[10px] font-black uppercase tracking-widest text-muted-foreground/70 ml-1">
+                <span className="text-[10px] font-black uppercase tracking-widest text-muted-foreground/70 ml-1 block">
                     Difficulty Level
-                </Text>
-                <Select
-                    options={DIFFICULTY_OPTIONS}
-                    value={difficulty}
-                    // eslint-disable-next-line @typescript-eslint/no-explicit-any
-                    onChange={(val: any) => onDifficultyChange(val)}
-                    className="w-full"
-                    dropdownClassName="rounded-xl border-muted/50 shadow-xl"
-                />
+                </span>
+                <div className="relative">
+                    <select
+                        value={difficulty}
+                        onChange={(e) => onDifficultyChange(e.target.value)}
+                        className="w-full appearance-none bg-background border border-muted/50 rounded-xl px-4 py-2.5 text-sm font-medium focus:outline-none focus:border-primary/50 focus:ring-1 focus:ring-primary/50 transition-all"
+                    >
+                        {DIFFICULTY_OPTIONS.map((option) => (
+                            <option key={option.value} value={option.value}>
+                                {option.label}
+                            </option>
+                        ))}
+                    </select>
+                    <ChevronDown className="absolute right-3 top-1/2 -translate-y-1/2 w-4 h-4 text-muted-foreground pointer-events-none" />
+                </div>
             </div>
 
             <div className="space-y-2">
-                <Text className="text-[10px] font-black uppercase tracking-widest text-muted-foreground/70 ml-1">
+                <span className="text-[10px] font-black uppercase tracking-widest text-muted-foreground/70 ml-1 block">
                     Content Source
-                </Text>
-                <Select
-                    options={SOURCE_OPTIONS}
-                    value={source}
-                    // eslint-disable-next-line @typescript-eslint/no-explicit-any
-                    onChange={(val: any) => onSourceChange(val)}
-                    className="w-full"
-                    dropdownClassName="rounded-xl border-muted/50 shadow-xl"
-                />
+                </span>
+                <div className="relative">
+                    <select
+                        value={source}
+                        onChange={(e) => onSourceChange(e.target.value)}
+                        className="w-full appearance-none bg-background border border-muted/50 rounded-xl px-4 py-2.5 text-sm font-medium focus:outline-none focus:border-primary/50 focus:ring-1 focus:ring-primary/50 transition-all"
+                    >
+                        {SOURCE_OPTIONS.map((option) => (
+                            <option key={option.value} value={option.value}>
+                                {option.label}
+                            </option>
+                        ))}
+                    </select>
+                    <ChevronDown className="absolute right-3 top-1/2 -translate-y-1/2 w-4 h-4 text-muted-foreground pointer-events-none" />
+                </div>
             </div>
 
             <div className="flex items-end">
-                <Button
-                    variant="text"
-                    className="text-xs font-bold text-muted-foreground hover:text-primary h-11 px-4 gap-2 transition-colors"
+                <button
+                    className="flex items-center justify-center text-xs font-bold text-muted-foreground hover:text-primary h-[42px] px-4 gap-2 transition-colors w-full md:w-auto"
                     onClick={onClear}
                 >
                     <X className="w-4 h-4" />
                     Reset All Filters
-                </Button>
+                </button>
             </div>
         </div>
     );

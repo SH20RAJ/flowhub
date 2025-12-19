@@ -27,7 +27,7 @@ export async function generateMetadata({ params }: Props): Promise<Metadata> {
 
     if (!workflow) return {};
 
-    const tagsList = workflow.tags.map(t => t.tag.name);
+    const tagsList = (workflow.tags || []).map(t => t.tag?.name).filter(Boolean) as string[];
 
     return {
         title: workflow.title,
@@ -96,8 +96,8 @@ export default async function Page({ params }: Props) {
         authorId: workflowData.authorId || '',
         createdAt: workflowData.createdAt || new Date().toISOString(),
         updatedAt: workflowData.updatedAt || new Date().toISOString(),
-        tags: workflowData.tags.map(t => t.tag.name),
-        nodes: workflowData.nodes.map(n => n.node.name),
+        tags: (workflowData.tags || []).map(t => t.tag?.name).filter(Boolean) as string[],
+        nodes: (workflowData.nodes || []).map(n => n.node?.name).filter(Boolean) as string[],
         license: workflowData.license || 'MIT',
     };
 

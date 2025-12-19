@@ -1,6 +1,5 @@
 'use client';
 
-import { Input } from 'rizzui';
 import { Search, X } from 'lucide-react';
 import { cn } from '@/lib/utils';
 
@@ -22,10 +21,10 @@ export function SearchBar({
     return (
         <div className={cn("relative group", className)}>
             <Search className="absolute left-3 top-1/2 -translate-y-1/2 h-4 w-4 text-muted-foreground group-focus-within:text-primary transition-colors" />
-            <Input
+            <input
                 type="search"
                 placeholder={placeholder}
-                className="pl-10 pr-10 h-11 w-full bg-muted/20 border-muted/50 focus:border-primary/50 transition-all rounded-xl"
+                className="pl-10 pr-10 h-11 w-full bg-muted/20 border border-muted/50 focus:border-primary/50 focus:outline-none focus:ring-1 focus:ring-primary/50 transition-all rounded-xl text-foreground placeholder:text-muted-foreground/50"
                 value={value}
                 onChange={(e) => onChange(e.target.value)}
             />

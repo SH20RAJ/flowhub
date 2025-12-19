@@ -10,8 +10,16 @@ import {
     Code2,
     Eye
 } from 'lucide-react';
-import { useState } from 'react';
+import { useState, useEffect, useRef } from 'react';
 import { cn } from '@/lib/utils';
+import Script from 'next/script';
+
+declare global {
+    interface Window {
+        // eslint-disable-next-line @typescript-eslint/no-explicit-any
+        Prism: any;
+    }
+}
 
 interface JsonViewerProps {
     json: string;
@@ -22,6 +30,19 @@ interface JsonViewerProps {
 export function JsonViewerImpl({ json, title, className }: JsonViewerProps) {
     const [isExpanded, setIsExpanded] = useState(false);
     const [copied, setCopied] = useState(false);
+    const codeRef = useRef<HTMLElement>(null);
+
+    const highlight = () => {
+        if (typeof window !== 'undefined' && window.Prism && codeRef.current) {
+            window.Prism.highlightElement(codeRef.current);
+        }
+    };
+
+    useEffect(() => {
+        if (isExpanded) {
+            highlight();
+        }
+    }, [isExpanded, json]);
 
     const handleCopy = () => {
         navigator.clipboard.writeText(json);
@@ -35,6 +56,20 @@ export function JsonViewerImpl({ json, title, className }: JsonViewerProps) {
             isExpanded ? "ring-2 ring-primary/10" : "",
             className
         )}>
+            <link
+                rel="stylesheet"
+                href="https://cdn.jsdelivr.net/npm/prismjs@1.29.0/themes/prism-tomorrow.min.css"
+            />
+            <Script
+                src="https://cdn.jsdelivr.net/npm/prismjs@1.29.0/prism.min.js"
+                onLoad={() => {
+                    const script = document.createElement('script');
+                    script.src = "https://cdn.jsdelivr.net/npm/prismjs@1.29.0/components/prism-json.min.js";
+                    script.onload = () => highlight();
+                    document.head.appendChild(script);
+                }}
+            />
+
             {/* Header */}
             <div className="flex items-center justify-between px-8 py-5 border-b border-muted/50 bg-muted/5">
                 <div className="flex items-center gap-3">
@@ -75,8 +110,8 @@ export function JsonViewerImpl({ json, title, className }: JsonViewerProps) {
                 "transition-all duration-700 ease-in-out relative overflow-hidden",
                 isExpanded ? "max-h-[800px] overflow-y-auto" : "max-h-24"
             )}>
-                <pre className="p-8 text-[11px] font-mono leading-relaxed text-muted-foreground/80 selection:bg-primary selection:text-primary-foreground select-all">
-                    <code>{json}</code>
+                <pre className="p-8 text-[11px] font-mono leading-relaxed !bg-transparent selection:bg-primary selection:text-primary-foreground select-all">
+                    <code ref={codeRef} className="language-json">{json}</code>
                 </pre>
 
                 {!isExpanded && (
