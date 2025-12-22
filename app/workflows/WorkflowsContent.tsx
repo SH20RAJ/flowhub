@@ -1,44 +1,91 @@
 'use client';
 
-import { useState, useMemo } from 'react';
+import { useState, useEffect } from 'react';
 import { Workflow } from '@/data/mock';
 import { LayoutGrid, List, SlidersHorizontal } from 'lucide-react';
 import { WorkflowCard } from '@/components/workflows/WorkflowCard';
 import { WorkflowTable } from '@/components/workflows/WorkflowTable';
 import { SearchBar } from '@/components/workflows/SearchBar';
 import { FilterPanel } from '@/components/workflows/FilterPanel';
+import { Pagination } from '@/components/ui/Pagination';
 import { cn } from '@/lib/utils';
+import { useRouter, useSearchParams } from 'next/navigation';
 
 interface WorkflowsContentProps {
     workflows: Workflow[];
+    totalPages: number;
+    currentPage: number;
+    totalCount: number;
 }
 
-export function WorkflowsContent({ workflows }: WorkflowsContentProps) {
+export function WorkflowsContent({ workflows, totalPages, currentPage, totalCount }: WorkflowsContentProps) {
+    const router = useRouter();
+    const searchParams = useSearchParams();
     const [view, setView] = useState<'grid' | 'table'>('grid');
-    const [search, setSearch] = useState('');
-    const [difficulty, setDifficulty] = useState('all');
-    const [source, setSource] = useState('all');
     const [showFilters, setShowFilters] = useState(false);
 
-    const filteredWorkflows = useMemo(() => {
-        return workflows.filter((w) => {
-            const matchesSearch =
-                w.title.toLowerCase().includes(search.toLowerCase()) ||
-                w.description.toLowerCase().includes(search.toLowerCase()) ||
-                w.nodes.some(n => n.toLowerCase().includes(search.toLowerCase())) ||
-                w.tags.some(t => t.toLowerCase().includes(search.toLowerCase()));
+    // Get initial state from URL
+    const initialSearch = searchParams.get('search') || '';
+    const initialDifficulty = searchParams.get('difficulty') || 'all';
+    const initialSource = searchParams.get('source') || 'all';
 
-            const matchesDifficulty = difficulty === 'all' || w.difficulty === difficulty;
-            const matchesSource = source === 'all' || (w as typeof w & { source?: string }).source === source;
+    const [search, setSearch] = useState(initialSearch);
+    const [difficulty, setDifficulty] = useState(initialDifficulty);
+    const [source, setSource] = useState(initialSource);
 
-            return matchesSearch && matchesDifficulty && matchesSource;
-        });
-    }, [workflows, search, difficulty, source]);
+    // Debounce search update
+    useEffect(() => {
+        const timer = setTimeout(() => {
+            if (search !== initialSearch) {
+                updateFilters({ search });
+            }
+        }, 300);
+        return () => clearTimeout(timer);
+    }, [search]);
+
+    const updateFilters = (updates: { search?: string; difficulty?: string; source?: string }) => {
+        const params = new URLSearchParams(searchParams.toString());
+
+        if (updates.search !== undefined) {
+            if (updates.search) params.set('search', updates.search);
+            else params.delete('search');
+        }
+
+        if (updates.difficulty !== undefined) {
+            if (updates.difficulty !== 'all') params.set('difficulty', updates.difficulty);
+            else params.delete('difficulty');
+        }
+
+        if (updates.source !== undefined) {
+            if (updates.source !== 'all') params.set('source', updates.source);
+            else params.delete('source');
+        }
+
+        // Reset to page 1 on filter change
+        params.set('page', '1');
+
+        router.push(`?${params.toString()}`);
+    };
+
+    const handleSearchChange = (value: string) => {
+        setSearch(value);
+    };
+
+    const handleDifficultyChange = (value: string) => {
+        setDifficulty(value);
+        updateFilters({ difficulty: value });
+    };
+
+    const handleSourceChange = (value: string) => {
+        setSource(value);
+        updateFilters({ source: value });
+    };
 
     const clearFilters = () => {
+        setSearch('');
         setDifficulty('all');
         setSource('all');
-        setSearch('');
+        router.push('?');
     };
 
     return (
@@ -50,7 +97,7 @@ export function WorkflowsContent({ workflows }: WorkflowsContentProps) {
                         Workflows
                     </h1>
                     <p className="text-muted-foreground font-medium">
-                        Browse through {workflows.length} production-ready automations.
+                        Browse through {totalCount} production-ready automations.
                     </p>
                 </div>
 
@@ -100,8 +147,8 @@ export function WorkflowsContent({ workflows }: WorkflowsContentProps) {
             <div className="flex flex-col gap-8">
                 <SearchBar
                     value={search}
-                    onChange={setSearch}
-                    onClear={() => setSearch('')}
+                    onChange={handleSearchChange}
+                    onClear={() => handleSearchChange('')}
                     className="max-w-2xl"
                 />
 
@@ -109,17 +156,17 @@ export function WorkflowsContent({ workflows }: WorkflowsContentProps) {
                     <FilterPanel
                         difficulty={difficulty}
                         source={source}
-                        onDifficultyChange={setDifficulty}
-                        onSourceChange={setSource}
+                        onDifficultyChange={handleDifficultyChange}
+                        onSourceChange={handleSourceChange}
                         onClear={clearFilters}
                     />
                 )}
 
-                {filteredWorkflows.length > 0 ? (
+                {workflows.length > 0 ? (
                     <div className="animate-in fade-in slide-in-from-bottom-4 duration-500">
                         {view === 'grid' ? (
                             <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-8">
-                                {filteredWorkflows.map((workflow) => (
+                                {workflows.map((workflow) => (
                                     <WorkflowCard
                                         key={workflow.id}
                                         workflow={workflow}
@@ -127,8 +174,10 @@ export function WorkflowsContent({ workflows }: WorkflowsContentProps) {
                                 ))}
                             </div>
                         ) : (
-                            <WorkflowTable workflows={filteredWorkflows} />
+                            <WorkflowTable workflows={workflows} />
                         )}
+
+                        <Pagination totalPages={totalPages} currentPage={currentPage} />
                     </div>
                 ) : (
                     <div className="flex flex-col items-center justify-center py-32 border-2 border-dashed rounded-3xl bg-muted/5 border-muted/30">
