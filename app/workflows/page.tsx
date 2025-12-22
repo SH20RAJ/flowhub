@@ -6,12 +6,20 @@ import { Difficulty, Source } from '@/constants/enums';
 import { workflows } from '@/db/schema';
 import { like, or, and, count, eq } from 'drizzle-orm';
 
+export const dynamic = 'force-dynamic';
+
+const baseUrl = 'https://flowhub.strivio.world';
+
 export const metadata: Metadata = {
     title: "Workflow Library | Flowhub",
     description: "Browse through hundreds of production-ready n8n automations. Filter by difficulty, tool, and industry.",
     openGraph: {
         title: "Workflow Library | Flowhub",
         description: "Browse through production-ready n8n automations.",
+        images: [{ url: `${baseUrl}/api/og?title=Workflow Library&description=Browse hundreds of n8n automations` }]
+    },
+    alternates: {
+        canonical: `${baseUrl}/workflows`,
     },
 };
 

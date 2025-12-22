@@ -41,6 +41,7 @@ export function WorkflowsContent({ workflows, totalPages, currentPage, totalCoun
             }
         }, 300);
         return () => clearTimeout(timer);
+        // eslint-disable-next-line react-hooks/exhaustive-deps
     }, [search]);
 
     const updateFilters = (updates: { search?: string; difficulty?: string; source?: string }) => {

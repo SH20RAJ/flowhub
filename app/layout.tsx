@@ -39,7 +39,7 @@ export const metadata: Metadata = {
 		siteName: "Flowhub",
 		images: [
 			{
-				url: "/og-image.png",
+				url: "/api/og?title=Flowhub&description=n8n Workflow Library",
 				width: 1200,
 				height: 630,
 				alt: "Flowhub - n8n Workflow Sharing Platform",
@@ -74,6 +74,8 @@ export const metadata: Metadata = {
 
 import { getCurrentUser } from '@/lib/current-user';
 
+import { SchemaJSON } from '@/components/seo/SchemaJSON';
+
 export default async function RootLayout({
 	children,
 }: Readonly<{
@@ -82,9 +84,23 @@ export default async function RootLayout({
 	// Sync user with database if logged in
 	await getCurrentUser();
 
+	const jsonLd = {
+		'@context': 'https://schema.org',
+		'@type': 'Organization',
+		name: 'Flowhub',
+		url: 'https://flowhub.strivio.world',
+		logo: 'https://flowhub.strivio.world/logo.png',
+		sameAs: [
+			'https://twitter.com/striviohq',
+			'https://github.com/strivio'
+		],
+		description: 'The community-driven library for n8n automation workflows.',
+	};
+
 	return (
 		<html lang="en" suppressHydrationWarning>
 			<body className={`${inter.className} antialiased font-sans`}>
+				<SchemaJSON json={jsonLd} />
 				<StackAuthProvider>
 					<ThemeProvider
 						attribute="class"

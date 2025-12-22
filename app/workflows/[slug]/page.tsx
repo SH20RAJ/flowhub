@@ -5,6 +5,7 @@ import { db } from '@/db';
 import { workflows } from '@/db/schema';
 import { eq } from 'drizzle-orm';
 import { Workflow, Author } from '@/data/mock';
+import { SchemaJSON } from '@/components/seo/SchemaJSON';
 
 interface Props {
     params: Promise<{ slug: string }>;
@@ -32,6 +33,9 @@ export async function generateMetadata({ params }: Props): Promise<Metadata> {
     return {
         title: workflow.title,
         description: workflow.description || '',
+        alternates: {
+            canonical: `https://flowhub.strivio.world/workflows/${slug}`,
+        },
         openGraph: {
             title: workflow.title,
             description: workflow.description || '',
@@ -133,10 +137,7 @@ export default async function Page({ params }: Props) {
 
     return (
         <>
-            <script
-                type="application/ld+json"
-                dangerouslySetInnerHTML={{ __html: JSON.stringify(jsonLd) }}
-            />
+            <SchemaJSON json={jsonLd} />
             <WorkflowDetailContent workflow={workflow} author={author} />
         </>
     );
