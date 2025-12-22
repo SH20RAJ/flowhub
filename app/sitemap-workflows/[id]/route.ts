@@ -9,7 +9,7 @@ export async function GET(
     { params }: { params: Promise<{ id: string }> }
 ) {
     const { id } = await params;
-    const pageIndex = Number(id);
+    const pageIndex = Number(id.replace('.xml', ''));
     const baseUrl = 'https://flowhub.strivio.world';
 
     if (isNaN(pageIndex)) {
