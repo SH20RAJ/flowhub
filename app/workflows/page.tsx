@@ -1,8 +1,8 @@
 import { WorkflowsContent } from './WorkflowsContent';
 import { Metadata } from 'next';
 import { db } from '@/db';
-import { workflows as workflowsSchema } from '@/db/schema';
 import { Workflow } from '@/data/mock';
+import { Difficulty, Source } from '@/constants/enums';
 
 export const metadata: Metadata = {
     title: "Workflow Library | Flowhub",
@@ -45,15 +45,12 @@ export default async function WorkflowsPage() {
                 slug: w.slug,
                 json: '', // Excluded for performance in list view
                 // Map DB difficulty to expected enum or default to Beginner
-                difficulty: (w.difficulty as any) || 'Beginner',
+                difficulty: (w.difficulty as Difficulty) || Difficulty.Beginner,
                 // Map sourceType to source as expected by the Mock interface
-                source: (w.sourceType as any) || 'community',
+                source: (w.sourceType as Source) || Source.Community,
                 authorId: w.authorId || '',
                 createdAt: w.createdAt || new Date().toISOString(),
                 updatedAt: w.updatedAt || new Date().toISOString(),
-                // Extra metadata expected by some components
-                downloads: 0,
-                views: 0,
                 // Extract tag names and filter out any potential nulls
                 tags: (w.tags || [])
                     .map(t => t.tag?.name)

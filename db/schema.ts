@@ -103,3 +103,7 @@ export const workflowNodesRelations = relations(workflowNodes, ({ one }) => ({
 export const usersRelations = relations(users, ({ many }) => ({
     workflows: many(workflows),
 }));
+
+export const nodesRelations = relations(nodes, ({ many }) => ({
+    workflowNodes: many(workflowNodes),
+}));

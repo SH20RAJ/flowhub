@@ -4,7 +4,8 @@ import { NodeDetailContent } from './NodeDetailContent';
 import { db } from '@/db';
 import { nodes } from '@/db/schema';
 import { eq } from 'drizzle-orm';
-import { Workflow } from '@/data/mock';
+import { Workflow, Node } from '@/data/mock';
+import { Difficulty, Source } from '@/constants/enums';
 
 interface Props {
     params: Promise<{ node: string }>;
@@ -46,21 +47,18 @@ export default async function Page({ params }: Props) {
 
     const nodeData = await getNodeWithWorkflows(nodeId);
 
-    // If node not found in DB, checks if there are any workflows?
-    // In DB approach, if node not found, likely no workflows either (unless querying by string match on workflows without joining).
-    // Better to just require node existence or handle missing node but matching workflows?
-    // Let's stick to node existence for now.
-
     if (!nodeData) {
-        // Fallback: Check if it's a valid node ID but just empty?
-        // Or 404.
         notFound();
     }
 
     const nodeName = nodeData.name;
 
-    // eslint-disable-next-line @typescript-eslint/no-explicit-any
-    const filteredWorkflows: Workflow[] = (nodeData.workflowNodes as any[]).map(wn => {
+    const nodeForDisplay: Node = {
+        id: nodeData.id,
+        name: nodeData.name,
+    };
+
+    const filteredWorkflows: Workflow[] = nodeData.workflowNodes.map(wn => {
         const w = wn.workflow;
         return {
             id: w.id,
@@ -68,22 +66,20 @@ export default async function Page({ params }: Props) {
             description: w.description || '',
             slug: w.slug,
             json: w.json,
-            // eslint-disable-next-line @typescript-eslint/no-explicit-any
-            difficulty: (w.difficulty as any) || 'Beginner',
-            // eslint-disable-next-line @typescript-eslint/no-explicit-any
-            source: (w.sourceType as any) || 'community',
+            difficulty: (w.difficulty as Difficulty) || Difficulty.Beginner,
+            source: (w.sourceType as Source) || Source.Community,
             authorId: w.authorId || '',
             createdAt: w.createdAt || new Date().toISOString(),
             updatedAt: w.updatedAt || new Date().toISOString(),
-            downloads: 0,
-            views: 0,
-            // eslint-disable-next-line @typescript-eslint/no-explicit-any
-            tags: w.tags.map((t: any) => t.tag.name),
-            // eslint-disable-next-line @typescript-eslint/no-explicit-any
-            nodes: w.nodes.map((n: any) => n.node.name),
+            tags: (w.tags || [])
+                .map(t => t.tag?.name)
+                .filter((name): name is string => !!name),
+            nodes: (w.nodes || [])
+                .map(n => n.node?.name)
+                .filter((name): name is string => !!name),
             license: w.license || 'MIT',
         };
     });
 
-    return <NodeDetailContent node={undefined} nodeName={nodeName} workflows={filteredWorkflows} />;
+    return <NodeDetailContent node={nodeForDisplay} nodeName={nodeName} workflows={filteredWorkflows} />;
 }

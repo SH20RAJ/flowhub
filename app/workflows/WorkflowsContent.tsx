@@ -2,7 +2,7 @@
 
 import { useState, useMemo } from 'react';
 import { Workflow } from '@/data/mock';
-import { LayoutGrid, List, SlidersHorizontal, Search, X, ChevronDown, ChevronRight } from 'lucide-react';
+import { LayoutGrid, List, SlidersHorizontal } from 'lucide-react';
 import { WorkflowCard } from '@/components/workflows/WorkflowCard';
 import { WorkflowTable } from '@/components/workflows/WorkflowTable';
 import { SearchBar } from '@/components/workflows/SearchBar';
