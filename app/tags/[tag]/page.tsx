@@ -1,13 +1,16 @@
+
 import { notFound } from 'next/navigation';
 import { Metadata } from 'next';
 import { TagDetailContent } from './TagDetailContent';
 import { db } from '@/db';
-import { tags } from '@/db/schema';
-import { eq } from 'drizzle-orm';
+import { tags, workflowVotes } from '@/db/schema';
+import { eq, and, inArray } from 'drizzle-orm';
 import { Workflow } from '@/data/mock';
+import { stackServerApp } from '@/stack/server';
 
 interface Props {
     params: Promise<{ tag: string }>;
+    searchParams: Promise<{ sort?: string }>;
 }
 
 async function getTagWithWorkflows(slug: string) {
@@ -41,8 +44,10 @@ export async function generateMetadata({ params }: Props): Promise<Metadata> {
     };
 }
 
-export default async function TagDetailPage({ params }: Props) {
+export default async function TagDetailPage({ params, searchParams }: Props) {
     const { tag } = await params;
+    const { sort = 'newest' } = await searchParams;
+    const user = await stackServerApp.getUser();
 
     // Note: The URL slug might be simple, but our DB slug might be different?
     // Use the slug from URL directly as it should match DB slug.
@@ -57,10 +62,24 @@ export default async function TagDetailPage({ params }: Props) {
 
     let filteredWorkflows: Workflow[] = [];
     try {
+        const workflowsList = (tagData.workflowTags).map((wt: any) => wt.workflow).filter(Boolean);
+        const workflowIds = workflowsList.map((w: any) => w.id);
+
         // eslint-disable-next-line @typescript-eslint/no-explicit-any
-        filteredWorkflows = (tagData.workflowTags as any[]).map(wt => {
-            const w = wt.workflow;
-            if (!w) return null;
+        const userVotesMap = new Map<string, number>();
+
+        if (user && workflowIds.length > 0) {
+            const votes = await db.query.workflowVotes.findMany({
+                where: and(
+                    eq(workflowVotes.userId, user.id),
+                    inArray(workflowVotes.workflowId, workflowIds)
+                )
+            });
+            votes.forEach(v => userVotesMap.set(v.workflowId, v.voteType));
+        }
+
+        // eslint-disable-next-line @typescript-eslint/no-explicit-any
+        filteredWorkflows = workflowsList.map((w: any) => {
             return {
                 id: w.id,
                 title: w.title,
@@ -74,15 +93,27 @@ export default async function TagDetailPage({ params }: Props) {
                 authorId: w.authorId || '',
                 createdAt: w.createdAt || new Date().toISOString(),
                 updatedAt: w.updatedAt || new Date().toISOString(),
-                downloads: 0,
-                views: 0,
+                upvotes: w.upvotes ?? 0,
+                downvotes: w.downvotes ?? 0,
+                userVote: userVotesMap.get(w.id) || 0,
                 // eslint-disable-next-line @typescript-eslint/no-explicit-any
                 tags: (w.tags || []).map((t: any) => t.tag?.name).filter(Boolean),
                 // eslint-disable-next-line @typescript-eslint/no-explicit-any
                 nodes: (w.nodes || []).map((n: any) => n.node?.name).filter(Boolean),
                 license: w.license || 'MIT',
-            };
-        }).filter(Boolean) as Workflow[];
+            } as Workflow;
+        });
+
+        // Sort in memory
+        if (sort === 'oldest') {
+            filteredWorkflows.sort((a, b) => new Date(a.createdAt).getTime() - new Date(b.createdAt).getTime());
+        } else if (sort === 'most-upvoted') {
+            filteredWorkflows.sort((a, b) => (b.upvotes || 0) - (a.upvotes || 0));
+        } else {
+            // Newest (Default)
+            filteredWorkflows.sort((a, b) => new Date(b.createdAt).getTime() - new Date(a.createdAt).getTime());
+        }
+
     } catch (error) {
         console.error('Error mapping workflows:', error);
     }

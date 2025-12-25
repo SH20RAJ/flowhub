@@ -3,10 +3,11 @@
 import { Title, Text } from 'rizzui';
 import { WorkflowCard } from '@/components/workflows/WorkflowCard';
 import Link from 'next/link';
-import { ArrowLeft, Tag as TagIcon } from 'lucide-react';
+import { ArrowLeft, Tag as TagIcon, ChevronDown } from 'lucide-react';
 import { ROUTES } from '@/constants/routes';
 import { EmptyState } from '@/components/ui/EmptyState';
 import { Workflow } from '@/data/mock';
+import { useRouter, useSearchParams } from 'next/navigation';
 
 interface TagDetailContentProps {
     tagName: string;
@@ -14,6 +15,16 @@ interface TagDetailContentProps {
 }
 
 export function TagDetailContent({ tagName, workflows }: TagDetailContentProps) {
+    const router = useRouter();
+    const searchParams = useSearchParams();
+    const currentSort = searchParams.get('sort') || 'newest';
+
+    const handleSortChange = (value: string) => {
+        const params = new URLSearchParams(searchParams.toString());
+        params.set('sort', value);
+        router.push(`?${params.toString()}`);
+    };
+
     return (
         <div className="space-y-12 py-4 animate-in fade-in duration-700">
             <Link
@@ -35,6 +46,19 @@ export function TagDetailContent({ tagName, workflows }: TagDetailContentProps) 
                     <Text className="text-muted-foreground text-lg font-medium leading-relaxed">
                         Discover {workflows.length} production-grade workflows in this category.
                     </Text>
+                </div>
+
+                <div className="relative inline-block h-12 min-w-[160px]">
+                    <select
+                        value={currentSort}
+                        onChange={(e) => handleSortChange(e.target.value)}
+                        className="w-full appearance-none h-full pl-4 pr-10 rounded-xl border border-muted/50 font-bold bg-transparent transition-all hover:bg-muted/30 focus:border-primary/50 focus:ring-1 focus:ring-primary/50 cursor-pointer"
+                    >
+                        <option value="newest">Newest</option>
+                        <option value="oldest">Oldest</option>
+                        <option value="most-upvoted">Most Upvoted</option>
+                    </select>
+                    <ChevronDown className="absolute right-3 top-1/2 -translate-y-1/2 w-4 h-4 text-muted-foreground pointer-events-none" />
                 </div>
             </div>
 

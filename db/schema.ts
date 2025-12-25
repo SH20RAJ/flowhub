@@ -1,5 +1,5 @@
 import { sql } from 'drizzle-orm';
-import { sqliteTable, text, integer, primaryKey } from 'drizzle-orm/sqlite-core';
+import { sqliteTable, text, integer, primaryKey, uniqueIndex } from 'drizzle-orm/sqlite-core';
 
 export const users = sqliteTable('users', {
     id: text('id').primaryKey(), // StackAuth user ID
@@ -24,6 +24,8 @@ export const workflows = sqliteTable('workflows', {
     difficulty: text('difficulty'), // Beginner, Intermediate, Advanced
     nodeCount: integer('node_count'),
     preview: text('preview'), // Preview text/string
+    upvotes: integer('upvotes').default(0),
+    downvotes: integer('downvotes').default(0),
     isVerified: integer('is_verified', { mode: 'boolean' }).default(false),
     sourceType: text('source_type'), // community, github, url
     sourceUrl: text('source_url'),
@@ -67,6 +69,16 @@ export const sources = sqliteTable('sources', {
     lastSyncedAt: text('last_synced_at').default(sql`CURRENT_TIMESTAMP`),
 });
 
+export const workflowVotes = sqliteTable('workflow_votes', {
+    id: text('id').primaryKey(),
+    workflowId: text('workflow_id').notNull().references(() => workflows.id),
+    userId: text('user_id').notNull(), // StackAuth user ID
+    voteType: integer('vote_type').notNull(), // 1 for upvote, -1 for downvote
+    createdAt: text('created_at').default(sql`CURRENT_TIMESTAMP`),
+}, (t) => ({
+    uniqueVote: uniqueIndex('unique_user_workflow_vote').on(t.workflowId, t.userId),
+}));
+
 import { relations } from 'drizzle-orm';
 
 export const workflowsRelations = relations(workflows, ({ one, many }) => ({
@@ -76,6 +88,11 @@ export const workflowsRelations = relations(workflows, ({ one, many }) => ({
     }),
     tags: many(workflowTags),
     nodes: many(workflowNodes),
+    votes: many(workflowVotes),
+}));
+
+export const tagsRelations = relations(tags, ({ many }) => ({
+    workflowTags: many(workflowTags),
 }));
 
 export const workflowTagsRelations = relations(workflowTags, ({ one }) => ({
@@ -107,3 +124,13 @@ export const usersRelations = relations(users, ({ many }) => ({
 export const nodesRelations = relations(nodes, ({ many }) => ({
     workflowNodes: many(workflowNodes),
 }));
+
+export const workflowVotesRelations = relations(workflowVotes, ({ one }) => ({
+    workflow: one(workflows, {
+        fields: [workflowVotes.workflowId],
+        references: [workflows.id],
+    }),
+}));
+
+// Added uniqueIndex to imports
+

@@ -2,7 +2,7 @@
 
 import { useState, useEffect } from 'react';
 import { Workflow } from '@/data/mock';
-import { LayoutGrid, List, SlidersHorizontal } from 'lucide-react';
+import { LayoutGrid, List, SlidersHorizontal, ChevronDown } from 'lucide-react';
 import { WorkflowCard } from '@/components/workflows/WorkflowCard';
 import { WorkflowTable } from '@/components/workflows/WorkflowTable';
 import { SearchBar } from '@/components/workflows/SearchBar';
@@ -26,10 +26,12 @@ export function WorkflowsContent({ workflows, totalPages, currentPage, totalCoun
 
     // Get initial state from URL
     const initialSearch = searchParams.get('search') || '';
+    const initialSort = searchParams.get('sort') || 'newest';
     const initialDifficulty = searchParams.get('difficulty') || 'all';
     const initialSource = searchParams.get('source') || 'all';
 
     const [search, setSearch] = useState(initialSearch);
+    const [sort, setSort] = useState(initialSort);
     const [difficulty, setDifficulty] = useState(initialDifficulty);
     const [source, setSource] = useState(initialSource);
 
@@ -44,7 +46,7 @@ export function WorkflowsContent({ workflows, totalPages, currentPage, totalCoun
         // eslint-disable-next-line react-hooks/exhaustive-deps
     }, [search]);
 
-    const updateFilters = (updates: { search?: string; difficulty?: string; source?: string }) => {
+    const updateFilters = (updates: { search?: string; difficulty?: string; source?: string; sort?: string }) => {
         const params = new URLSearchParams(searchParams.toString());
 
         if (updates.search !== undefined) {
@@ -60,6 +62,11 @@ export function WorkflowsContent({ workflows, totalPages, currentPage, totalCoun
         if (updates.source !== undefined) {
             if (updates.source !== 'all') params.set('source', updates.source);
             else params.delete('source');
+        }
+
+        if (updates.sort !== undefined) {
+            if (updates.sort !== 'newest') params.set('sort', updates.sort);
+            else params.delete('sort');
         }
 
         // Reset to page 1 on filter change
@@ -80,6 +87,11 @@ export function WorkflowsContent({ workflows, totalPages, currentPage, totalCoun
     const handleSourceChange = (value: string) => {
         setSource(value);
         updateFilters({ source: value });
+    };
+
+    const handleSortChange = (value: string) => {
+        setSort(value);
+        updateFilters({ sort: value });
     };
 
     const clearFilters = () => {
@@ -126,6 +138,19 @@ export function WorkflowsContent({ workflows, totalPages, currentPage, totalCoun
                         >
                             <List className="w-4 h-4" />
                         </button>
+                    </div>
+
+                    <div className="relative inline-block h-12">
+                        <select
+                            value={sort}
+                            onChange={(e) => handleSortChange(e.target.value)}
+                            className="appearance-none h-full pl-4 pr-10 rounded-xl border border-muted/50 font-bold bg-transparent transition-all hover:bg-muted/30 focus:border-primary/50 focus:ring-1 focus:ring-primary/50 cursor-pointer"
+                        >
+                            <option value="newest">Newest</option>
+                            <option value="oldest">Oldest</option>
+                            <option value="most-upvoted">Most Upvoted</option>
+                        </select>
+                        <ChevronDown className="absolute right-3 top-1/2 -translate-y-1/2 w-4 h-4 text-muted-foreground pointer-events-none" />
                     </div>
 
                     <button

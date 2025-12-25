@@ -4,7 +4,9 @@ import { db } from '@/db';
 import { Workflow } from '@/data/mock';
 import { Difficulty, Source } from '@/constants/enums';
 import { workflows } from '@/db/schema';
-import { like, or, and, count, eq } from 'drizzle-orm';
+import { like, or, and, count, eq, asc, desc, inArray } from 'drizzle-orm';
+import { stackServerApp } from '@/stack/server';
+import { workflowVotes } from '@/db/schema';
 
 export const dynamic = 'force-dynamic';
 
@@ -29,6 +31,7 @@ interface PageProps {
         search?: string;
         difficulty?: string;
         source?: string;
+        sort?: string;
     }>;
 }
 
@@ -41,6 +44,9 @@ export default async function WorkflowsPage({ searchParams }: PageProps) {
     const search = params.search || '';
     const difficulty = params.difficulty || 'all';
     const source = params.source || 'all';
+    const sort = params.sort || 'newest';
+
+    const user = await stackServerApp.getUser();
 
     // Build filter conditions
     const conditions = [];
@@ -79,7 +85,9 @@ export default async function WorkflowsPage({ searchParams }: PageProps) {
         where: whereClause,
         limit: pageSize,
         offset: offset,
-        orderBy: (workflows, { desc }) => [desc(workflows.createdAt)],
+        orderBy: sort === 'oldest' ? asc(workflows.createdAt) :
+            sort === 'most-upvoted' ? desc(workflows.upvotes) :
+                desc(workflows.createdAt),
         with: {
             author: true,
             tags: {
@@ -95,6 +103,20 @@ export default async function WorkflowsPage({ searchParams }: PageProps) {
         }
     });
 
+    const workflowIds = workflowsData.map(w => w.id);
+    // eslint-disable-next-line @typescript-eslint/no-explicit-any
+    const userVotesMap = new Map<string, number>();
+
+    if (user && workflowIds.length > 0) {
+        const votes = await db.query.workflowVotes.findMany({
+            where: and(
+                eq(workflowVotes.userId, user.id),
+                inArray(workflowVotes.workflowId, workflowIds)
+            )
+        });
+        votes.forEach(v => userVotesMap.set(v.workflowId, v.voteType));
+    }
+
     // 3. Map DB results to the Workflow interface
     const mappedWorkflows: Workflow[] = workflowsData.map(w => {
         try {
@@ -109,6 +131,9 @@ export default async function WorkflowsPage({ searchParams }: PageProps) {
                 authorId: w.authorId || '',
                 createdAt: w.createdAt || new Date().toISOString(),
                 updatedAt: w.updatedAt || new Date().toISOString(),
+                upvotes: w.upvotes ?? 0,
+                downvotes: w.downvotes ?? 0,
+                userVote: userVotesMap.get(w.id) || 0,
                 tags: (w.tags || [])
                     .map(t => t.tag?.name)
                     .filter((name): name is string => !!name),
@@ -116,7 +141,7 @@ export default async function WorkflowsPage({ searchParams }: PageProps) {
                     .map(n => n.node?.name)
                     .filter((name): name is string => !!name),
                 license: w.license || 'MIT',
-            };
+            } as Workflow;
         } catch (error) {
             console.error(`Failed to map workflow with ID ${w.id}:`, error);
             return null;

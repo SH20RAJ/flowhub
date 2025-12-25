@@ -7,6 +7,7 @@ import { Calendar, User } from 'lucide-react';
 import { cn } from '@/lib/utils';
 import { ROUTES } from '@/constants/routes';
 import { Workflow } from '@/data/mock';
+import { VoteButtons } from '@/components/VoteButtons';
 
 interface WorkflowCardProps {
     workflow: Workflow;
@@ -64,9 +65,17 @@ export function WorkflowCard({ workflow, className }: WorkflowCardProps) {
                             {workflow.source}
                         </span>
                     </div>
-                    <div className="flex items-center gap-1.5 text-[10px] font-bold text-muted-foreground/60">
-                        <Calendar className="w-3.5 h-3.5" />
-                        <span>{new Date(workflow.createdAt).toLocaleDateString(undefined, { month: 'short', year: 'numeric' })}</span>
+                    <div className="flex items-center gap-3">
+                        <VoteButtons
+                            workflowId={workflow.id}
+                            initialUpvotes={workflow.upvotes || 0}
+                            initialDownvotes={workflow.downvotes || 0}
+                            initialUserVote={workflow.userVote || 0}
+                        />
+                        <div className="hidden sm:flex items-center gap-1.5 text-[10px] font-bold text-muted-foreground/60">
+                            <Calendar className="w-3.5 h-3.5" />
+                            <span>{new Date(workflow.createdAt).toLocaleDateString(undefined, { month: 'short', year: 'numeric' })}</span>
+                        </div>
                     </div>
                 </div>
 

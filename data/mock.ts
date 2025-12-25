@@ -32,6 +32,9 @@ export interface Workflow {
     createdAt: string;
     updatedAt: string;
     featured?: boolean;
+    upvotes?: number;
+    downvotes?: number;
+    userVote?: number; // 1 for upvote, -1 for downvote, 0/null for none
 }
 
 export const authors: Author[] = [
