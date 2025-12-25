@@ -104,7 +104,6 @@ export default async function WorkflowsPage({ searchParams }: PageProps) {
     });
 
     const workflowIds = workflowsData.map(w => w.id);
-    // eslint-disable-next-line @typescript-eslint/no-explicit-any
     const userVotesMap = new Map<string, number>();
 
     if (user && workflowIds.length > 0) {

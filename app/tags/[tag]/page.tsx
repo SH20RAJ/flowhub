@@ -62,10 +62,10 @@ export default async function TagDetailPage({ params, searchParams }: Props) {
 
     let filteredWorkflows: Workflow[] = [];
     try {
-        const workflowsList = (tagData.workflowTags).map((wt: any) => wt.workflow).filter(Boolean);
-        const workflowIds = workflowsList.map((w: any) => w.id);
-
         // eslint-disable-next-line @typescript-eslint/no-explicit-any
+        const workflowsList = (tagData.workflowTags).map((wt: any) => wt.workflow).filter(Boolean);
+        const workflowIds = workflowsList.map((w) => w.id);
+
         const userVotesMap = new Map<string, number>();
 
         if (user && workflowIds.length > 0) {
@@ -77,6 +77,9 @@ export default async function TagDetailPage({ params, searchParams }: Props) {
             });
             votes.forEach(v => userVotesMap.set(v.workflowId, v.voteType));
         }
+
+
+
 
         // eslint-disable-next-line @typescript-eslint/no-explicit-any
         filteredWorkflows = workflowsList.map((w: any) => {

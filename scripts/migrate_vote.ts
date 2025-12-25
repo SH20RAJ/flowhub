@@ -9,14 +9,14 @@ async function main() {
         try {
             await db.run(sql`ALTER TABLE workflows ADD COLUMN upvotes integer DEFAULT 0`);
             console.log("Added upvotes column");
-        } catch (e) {
+        } catch (e: any) {
             console.log("upvotes column might already exist or error:", e.message);
         }
 
         try {
             await db.run(sql`ALTER TABLE workflows ADD COLUMN downvotes integer DEFAULT 0`);
             console.log("Added downvotes column");
-        } catch (e) {
+        } catch (e: any) {
             console.log("downvotes column might already exist or error:", e.message);
         }
 
@@ -31,7 +31,7 @@ async function main() {
         )
         `);
             console.log("Created workflow_votes table");
-        } catch (e) {
+        } catch (e: any) {
             console.log("Error creating table:", e.message);
         }
 
@@ -40,7 +40,7 @@ async function main() {
         CREATE UNIQUE INDEX IF NOT EXISTS unique_user_workflow_vote ON workflow_votes (workflow_id, user_id)
         `);
             console.log("Created unique index");
-        } catch (e) {
+        } catch (e: any) {
             console.log("Error creating index:", e.message);
         }
 
